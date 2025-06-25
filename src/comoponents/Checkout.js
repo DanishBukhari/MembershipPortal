@@ -6,7 +6,7 @@ import { loadStripe } from '@stripe/stripe-js';
 
 import { toast } from 'react-toastify';
 
-const stripePromise = loadStripe('pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy');
+const stripePromise = loadStripe('pk_live_51KbKQBBQRG3WrNBR9JwkMRfjBiPPF6XQ0IBbgEaWT6wm2dr2hEOl0JTEJTsHrM9YtYCWpWaH0JZGgBMFpA3mrPGV00OVR3gxo5');
 
 
 const CheckoutForm = () => {
