@@ -13,13 +13,17 @@ const MembershipForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!name || !email || !phone) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
     setLoading(true);
     try {
-      await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/users', { name, email, phone, tier });
+      const response = await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/users', { name, email, phone, tier });
       navigate('/checkout', { state: { tier, name, email, phone } });
     } catch (err) {
-      if (err.response?.status === 400) {
-        toast.error('Email already exists');
+      if (err.response?.data?.error) {
+        toast.error(err.response.data.error);
       } else {
         toast.error('Error registering. Please try again.');
       }

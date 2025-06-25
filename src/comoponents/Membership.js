@@ -14,7 +14,7 @@ const Membership = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-          <div className="tier flex flex-col items-center p-6 bg-white rounded-lg shadow-lg">
+          <div className="tier flex flex-col items-center justify-between p-6 bg-white rounded-lg shadow-lg">
             <h3 className="text-2xl font-bold uppercase text-[#CF066C]">LEGACY MAKER</h3>
             <p className="text-base text-[#CF066C] text-center mt-2">
               Unlimited access to Legacy Hub (excluding workshops). Perfect for those who want to dive in fully and make the most of everything we offer.
@@ -26,7 +26,7 @@ const Membership = () => {
             <Link style={{border: "1px solid #CF066C"}} to="/form/legacy-maker" className="mt-4 px-6 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C]  transition">Get Membership</Link>
           </div>
 
-          <div className="tier flex flex-col items-center p-6 bg-white rounded-lg shadow-lg">
+          <div className="tier flex flex-col items-center justify-between p-6 bg-white rounded-lg shadow-lg">
             <h3 className="text-2xl font-bold uppercase text-[#CF066C]">LEADER</h3>
             <p className="text-base text-[#CF066C] text-center mt-2">
               5 x 1 hour session use per week. Ideal for those looking to stay engaged and take on a leadership role in our community.
@@ -38,7 +38,7 @@ const Membership = () => {
             <Link style={{border: "1px solid #CF066C"}} to="/form/leader" className="mt-4 px-6 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition">Get Membership</Link>
           </div>
 
-          <div className="tier flex flex-col items-center p-6 bg-white rounded-lg shadow-lg">
+          <div className="tier flex flex-col items-center justify-between p-6 bg-white rounded-lg shadow-lg">
             <h3 className="text-2xl font-bold uppercase text-[#CF066C]">SUPPORTER</h3>
             <p className="text-base text-[#CF066C] text-center mt-2">
               2 x 1 hour sessions per week, additional sessions at $5 each. A great option for those who want to participate while enjoying flexible use of our space.

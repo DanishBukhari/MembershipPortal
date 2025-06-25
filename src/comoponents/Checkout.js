@@ -3,20 +3,18 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
-
 import { toast } from 'react-toastify';
 
 const stripePromise = loadStripe('pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy');
-
 
 const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const location = useLocation();
   const navigate = useNavigate();
-  const { tier, name, email, phone } = location.state || {};
+  const { tier, name, email, phone, totalAmount } = location.state || {};
   const prices = { 'legacy-maker': 35, 'leader': 20, 'supporter': 8, 'walk-in': 7 };
-  const price = prices[tier];
+  const price = totalAmount ? totalAmount / 100 : prices[tier];
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -29,7 +27,7 @@ const CheckoutForm = () => {
     });
 
     if (error) {
-      console.error('Error creating payment method:', error); // Debugging log
+      console.error('Error creating payment method:', error);
       toast.error(error.message);
       return;
     }
@@ -37,9 +35,10 @@ const CheckoutForm = () => {
     setLoading(true);
 
     try {
+      const amountToSend = totalAmount || (prices[tier] * 100);
       await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/payment', {
         paymentMethodId: paymentMethod.id,
-        amount: price * 100,
+        amount: amountToSend,
         tier,
         name,
         email,
@@ -70,7 +69,7 @@ const CheckoutForm = () => {
               disabled={!stripe || loading}
               className="w-full py-2 mt-4 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition duration-300 font-semibold"
             >
-              Pay ${price}
+              Pay ${price.toFixed(2)}
             </button>
           </div>
         )}

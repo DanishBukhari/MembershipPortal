@@ -8,15 +8,36 @@ const WalkInForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [numAdults, setNumAdults] = useState(1);
+  const [numChildren, setNumChildren] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const navigate = useNavigate();
 
+  const totalPrice = (numAdults * 7 + numChildren * 3.5).toFixed(2);
+
   const handlePayNow = async () => {
+    if (!name || !email || !phone) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
     setLoading(true);
     try {
-      await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in', { name, email, phone, tier: 'walk-in' });
-      navigate('/checkout', { state: { tier: 'walk-in', name, email, phone } });
+      const response = await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in', {
+        name,
+        email,
+        phone,
+        tier: 'walk-in',
+        numAdults,
+        numChildren,
+      });
+      if (response.data.error) {
+        toast.error(response.data.error);
+        setLoading(false);
+        return;
+      }
+      const totalAmount = (numAdults * 7 + numChildren * 3.5) * 100; // in cents
+      navigate('/checkout', { state: { tier: 'walk-in', name, email, phone, totalAmount } });
     } catch (err) {
       toast.error('Error registering walk-in. Please try again.');
     } finally {
@@ -25,9 +46,26 @@ const WalkInForm = () => {
   };
 
   const handlePayAtCounter = async () => {
+    if (!name || !email || !phone) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
     setLoading(true);
     try {
-      await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in', { name, email, phone, tier: 'walk-in', paymentMethod: 'cash' });
+      const response = await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in', {
+        name,
+        email,
+        phone,
+        tier: 'walk-in',
+        paymentMethod: 'cash',
+        numAdults,
+        numChildren,
+      });
+      if (response.data.error) {
+        toast.error(response.data.error);
+        setLoading(false);
+        return;
+      }
       setShowMessage(true);
       toast.success('Registered! Please pay at the counter.');
     } catch (err) {
@@ -78,12 +116,33 @@ const WalkInForm = () => {
                 required
               />
             </div>
+            <div>
+              <label className="block text-[#CF066C] font-medium">Number of Adults</label>
+              <input
+                type="number"
+                value={numAdults}
+                onChange={(e) => setNumAdults(Math.max(1, parseInt(e.target.value)))}
+                min="1"
+                className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
+              />
+            </div>
+            <div>
+              <label className="block text-[#CF066C] font-medium">Number of Children</label>
+              <input
+                type="number"
+                value={numChildren}
+                onChange={(e) => setNumChildren(Math.max(0, parseInt(e.target.value)))}
+                min="0"
+                className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
+              />
+            </div>
+            <p className="text-[#CF066C] font-medium">Total Price: ${totalPrice}</p>
             <button
               style={{ border: "1px solid #CF066C" }}
               onClick={handlePayNow}
               className="w-full py-2 mt-4 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition duration-300 font-semibold"
             >
-              Pay Now ($7)
+              Pay Now
             </button>
             <button
               style={{ border: "1px solid #CF066C" }}

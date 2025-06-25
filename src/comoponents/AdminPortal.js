@@ -113,11 +113,19 @@ const AdminPortal = () => {
                 <strong>Expiry:</strong>{" "}
                 {new Date(selectedUser.expiry).toLocaleDateString()}
               </p>
-              <img
-                src={selectedUser.photo}
-                alt="Profile"
-                className="w-24 h-24 rounded-full mt-2"
-              />
+              {selectedUser.tier !== "walk-in" && selectedUser.photo && (
+                <img
+                  src={selectedUser.photo}
+                  alt=""
+                  className="w-24 h-24 rounded-full mt-2"
+                />
+              )}
+              {selectedUser.tier === "walk-in" && (
+                <p>
+                  <strong>Total Passes:</strong> {selectedUser.numAdults || 0} adults,{" "}
+                  {selectedUser.numChildren || 0} children
+                </p>
+              )}
               <h4 className="mt-4 font-bold">Family Members</h4>
               {selectedUser.family.map((member, idx) => (
                 <div key={idx}>
@@ -130,11 +138,13 @@ const AdminPortal = () => {
                   <p>
                     <strong>Phone:</strong> {member.phone}
                   </p>
-                  <img
-                    src={member.photo}
-                    alt={member.name}
-                    className="w-16 h-16 rounded-full"
-                  />
+                  {member.photo && (
+                    <img
+                      src={member.photo}
+                      alt={member.name}
+                      className="w-16 h-16 rounded-full"
+                    />
+                  )}
                 </div>
               ))}
               <button
