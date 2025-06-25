@@ -84,7 +84,7 @@ const AdminPortal = () => {
         </div>
         {isModalOpen && selectedUser && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md overflow-y-scroll">
               <h3 className="text-2xl font-bold text-[#CF066C] mb-4">
                 User Details
               </h3>

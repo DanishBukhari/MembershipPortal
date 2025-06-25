@@ -62,14 +62,15 @@ const CheckoutForm = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <CardElement className="p-2 border border-gray-300 rounded-md" />
+            <CardElement
+            options={{ hidePostalCode: true }} className="p-2 border border-gray-300 rounded-md" />
             <button
               style={{ border: '1px solid #CF066C' }}
               onClick={handleSubmit}
               disabled={!stripe || loading}
               className="w-full py-2 mt-4 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition duration-300 font-semibold"
             >
-              Pay ${price.toFixed(2)}
+              Pay ${price}
             </button>
           </div>
         )}
