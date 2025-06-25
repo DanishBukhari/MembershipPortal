@@ -19,7 +19,7 @@ const MembershipForm = () => {
     }
     setLoading(true);
     try {
-      const response = await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/users', { name, email, phone, tier });
+       await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/users', { name, email, phone, tier });
       navigate('/checkout', { state: { tier, name, email, phone } });
     } catch (err) {
       if (err.response?.data?.error) {
