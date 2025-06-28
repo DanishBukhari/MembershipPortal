@@ -156,7 +156,7 @@ const AdminPortal = () => {
                     {member.tier === "walk-in" && (
                       <>
                         <p><strong>Booking Date:</strong> {new Date(member.createdAt).toLocaleDateString()}</p>
-                        <p><strong>Expiry Date:</strong> {new Date(member.expiry).toLocaleDateString()}</p>
+                        <p><strong>Expiry Date:</strong> {new Date(member.expiry).toLocaleDateString('en-GB', { timeZone: 'UTC' })}</p>
                       </>
                     )}
                     <p><strong>Visits Left:</strong> {member.visitsLeft === Infinity ? "Unlimited" : member.visitsLeft === 0 ? "Maxed Out" : member.visitsLeft}</p>

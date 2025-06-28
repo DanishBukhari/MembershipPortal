@@ -17,13 +17,14 @@ const CheckoutForm = () => {
   const [loading, setLoading] = useState(false);
 
   // Calculate total price: for memberships, first at full price, others at 50% off; for walk-ins, use totalAmountInCents
- const totalPrice = memberships && memberships.length > 0
+const totalPrice = memberships && memberships.length > 0
   ? memberships.reduce((total, tier, index) => {
       const basePrice = prices[tier];
       const price = index === 0 ? basePrice : basePrice * 0.5;
       return total + price;
     }, 0).toFixed(2)
   : (typeof totalAmountInCents === 'number' ? (totalAmountInCents / 100).toFixed(2) : '0.00');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
@@ -85,7 +86,6 @@ const CheckoutForm = () => {
               options={{ hidePostalCode: true }}
               className="p-2 border border-gray-300 rounded-md"
             />
-            
             <button
               style={{ border: '1px solid #CF066C' }}
               onClick={handleSubmit}
