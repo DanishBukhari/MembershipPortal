@@ -85,6 +85,7 @@ const CheckoutForm = () => {
               options={{ hidePostalCode: true }}
               className="p-2 border border-gray-300 rounded-md"
             />
+            
             <button
               style={{ border: '1px solid #CF066C' }}
               onClick={handleSubmit}
