@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { QRCodeCanvas } from "qrcode.react";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { QRCodeCanvas } from 'qrcode.react';
 import { toast } from "react-toastify";
 
 const WalkInForm = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [numAdults, setNumAdults] = useState(1);
   const [numChildren, setNumChildren] = useState(0);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const navigate = useNavigate();
@@ -19,40 +19,29 @@ const WalkInForm = () => {
 
   const handlePayNow = async () => {
     if (!name || !email || !phone || !selectedDate) {
-      toast.error("Please fill in all required fields.");
+      toast.error('Please fill in all required fields.');
       return;
     }
     setLoading(true);
     try {
-      const response = await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in",
-        {
-          name,
-          email,
-          phone,
-          tier: "walk-in",
-          numAdults,
-          numChildren,
-          selectedDate,
-        }
-      );
+      const response = await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in', {
+        name,
+        email,
+        phone,
+        tier: 'walk-in',
+        numAdults,
+        numChildren,
+        selectedDate,
+      });
       if (response.data.error) {
         toast.error(response.data.error);
         setLoading(false);
         return;
       }
       const totalAmount = (numAdults * 7 + numChildren * 3.5) * 100; // in cents
-      navigate("/checkout", {
-        state: {
-          tier: "walk-in",
-          name,
-          email,
-          phone,
-          totalAmountInCents: totalAmount,
-        },
-      });
+      navigate('/checkout', { state: { tier: 'walk-in', name, email, phone, totalAmountInCents: totalAmount } });
     } catch (err) {
-      toast.error("Error registering walk-in. Please try again.");
+      toast.error('Error registering walk-in. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -60,35 +49,30 @@ const WalkInForm = () => {
 
   const handlePayAtCounter = async () => {
     if (!name || !email || !phone || !selectedDate) {
-      toast.error("Please fill in all required fields.");
+      toast.error('Please fill in all required fields.');
       return;
     }
     setLoading(true);
     try {
-      const response = await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in",
-        {
-          name,
-          email,
-          phone,
-          tier: "walk-in",
-          paymentMethod: "cash",
-          numAdults,
-          numChildren,
-          selectedDate,
-        }
-      );
+      const response = await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in', {
+        name,
+        email,
+        phone,
+        tier: 'walk-in',
+        paymentMethod: 'cash',
+        numAdults,
+        numChildren,
+        selectedDate,
+      });
       if (response.data.error) {
         toast.error(response.data.error);
         setLoading(false);
         return;
       }
-      setShowMessage(
-        `Please pay $${totalPrice} at the counter for ${numAdults} adult(s) and ${numChildren} child(ren).`
-      );
-      toast.success("Registered! Please pay at the counter.");
+      setShowMessage(`Please pay $${totalPrice} at the counter for ${numAdults} adult(s) and ${numChildren} child(ren).`);
+      toast.success('Registered! Please pay at the counter.');
     } catch (err) {
-      toast.error("Error registering walk-in. Please try again.");
+      toast.error('Error registering walk-in. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -97,9 +81,7 @@ const WalkInForm = () => {
   return (
     <div className="container mx-auto py-12 bg-[#FFFFFF] min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">
-          Walk-In Registration
-        </h2>
+        <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">Walk-In Registration</h2>
         <QRCodeCanvas value={window.location.href} className="mx-auto mb-4" />
         {loading ? (
           <div className="flex justify-center items-center">
@@ -128,9 +110,7 @@ const WalkInForm = () => {
               />
             </div>
             <div>
-              <label className="block text-[#CF066C] font-medium">
-                Phone Number
-              </label>
+              <label className="block text-[#CF066C] font-medium">Phone Number</label>
               <input
                 type="tel"
                 value={phone}
@@ -140,9 +120,7 @@ const WalkInForm = () => {
               />
             </div>
             <div>
-              <label className="block text-[#CF066C] font-medium">
-                Select Date
-              </label>
+              <label className="block text-[#CF066C] font-medium">Select Date</label>
               <input
                 type="date"
                 value={selectedDate}
@@ -153,36 +131,26 @@ const WalkInForm = () => {
               />
             </div>
             <div>
-              <label className="block text-[#CF066C] font-medium">
-                Number of Adults
-              </label>
+              <label className="block text-[#CF066C] font-medium">Number of Adults</label>
               <input
                 type="number"
                 value={numAdults}
-                onChange={(e) =>
-                  setNumAdults(Math.max(1, parseInt(e.target.value) || 1))
-                }
+                onChange={(e) => setNumAdults(Math.max(1, parseInt(e.target.value)))}
                 min="1"
                 className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
               />
             </div>
             <div>
-              <label className="block text-[#CF066C] font-medium">
-                Number of Children
-              </label>
+              <label className="block text-[#CF066C] font-medium">Number of Children</label>
               <input
                 type="number"
                 value={numChildren}
-                onChange={(e) =>
-                  setNumChildren(Math.max(0, parseInt(e.target.value) || 0))
-                }
+                onChange={(e) => setNumChildren(Math.max(0, parseInt(e.target.value)))}
                 min="0"
                 className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
               />
             </div>
-            <p className="text-[#CF066C] font-medium">
-              Total Price: ${totalPrice}
-            </p>
+            <p className="text-[#CF066C] font-medium">Total Price: ${totalPrice}</p>
             <button
               style={{ border: "1px solid #CF066C" }}
               onClick={handlePayNow}
