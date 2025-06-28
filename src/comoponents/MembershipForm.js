@@ -8,8 +8,26 @@ const MembershipForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [primaryTier, setPrimaryTier] = useState(tier || 'legacy-maker');
+  const [familyMemberships, setFamilyMemberships] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const membershipOptions = ['legacy-maker', 'leader', 'supporter'];
+
+  const addFamilyMembership = () => {
+    setFamilyMemberships([...familyMemberships, 'legacy-maker']);
+  };
+
+  const updateFamilyMembershipTier = (index, newTier) => {
+    const updated = [...familyMemberships];
+    updated[index] = newTier;
+    setFamilyMemberships(updated);
+  };
+
+  const removeFamilyMembership = (index) => {
+    setFamilyMemberships(familyMemberships.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,14 +37,16 @@ const MembershipForm = () => {
     }
     setLoading(true);
     try {
-       await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/users', { name, email, phone, tier });
-      navigate('/checkout', { state: { tier, name, email, phone } });
+      const memberships = [primaryTier, ...familyMemberships];
+      await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/users', {
+        name,
+        email,
+        phone,
+        memberships
+      });
+      navigate('/checkout', { state: { memberships, name, email, phone } });
     } catch (err) {
-      if (err.response?.data?.error) {
-        toast.error(err.response.data.error);
-      } else {
-        toast.error('Error registering. Please try again.');
-      }
+      toast.error(err.response?.data?.error || 'Error registering. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -71,6 +91,46 @@ const MembershipForm = () => {
                 className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
                 required
               />
+            </div>
+            <div>
+              <label className="block text-[#CF066C] font-medium">Your Membership</label>
+              <select
+                value={primaryTier}
+                onChange={(e) => setPrimaryTier(e.target.value)}
+                className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+              >
+                {membershipOptions.map((option) => (
+                  <option key={option} value={option}>{option.toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[#CF066C] font-medium">Family Memberships</label>
+              {familyMemberships.map((tier, index) => (
+                <div key={index} className="flex space-x-2 mt-2">
+                  <select
+                    value={tier}
+                    onChange={(e) => updateFamilyMembershipTier(index, e.target.value)}
+                    className="p-2 border border-gray-300 rounded-md"
+                  >
+                    {membershipOptions.map((option) => (
+                      <option key={option} value={option}>{option.toUpperCase()}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => removeFamilyMembership(index)}
+                    className="p-2 text-red-500 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={addFamilyMembership}
+                className="mt-2 p-2 bg-[#CF066C] text-white rounded-md hover:bg-[#fff] hover:text-[#CF066C] transition"
+              >
+                Add Family Membership
+              </button>
             </div>
             <button
               style={{ border: "1px solid #CF066C" }}

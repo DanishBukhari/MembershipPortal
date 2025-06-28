@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 const Membership = () => {
   return (
-    
     <section className="bg-[#FFFFFF] py-12 min-h-screen">
       <div className="container mx-auto text-center">
         <h1 className="text-4xl font-bold uppercase text-[#CF066C]">LEGACY HUB PRICE LIST</h1>
@@ -11,6 +10,9 @@ const Membership = () => {
         <div className="mt-4">
           <span className="text-2xl italic font-bold text-[#EDEC25]">YOU ME AND THE COMMUNITY</span>
           <span className="block text-sm text-[#CF066C]">A different way of life</span>
+        </div>
+        <div className="mt-4 text-center text-[#CF066C] font-bold">
+          <p>*50% off on 2+ memberships</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
@@ -23,7 +25,7 @@ const Membership = () => {
               <span className="text-3xl font-bold">$35</span>
               <span className="text-sm text-[#EDEC25]">per week</span>
             </div>
-            <Link style={{border: "1px solid #CF066C"}} to="/form/legacy-maker" className="mt-4 px-6 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C]  transition">Get Membership</Link>
+            <Link style={{border: "1px solid #CF066C"}} to="/form/legacy-maker" className="mt-4 px-6 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition">Get Membership</Link>
           </div>
 
           <div className="tier flex flex-col items-center justify-between p-6 bg-white rounded-lg shadow-lg">
@@ -69,4 +71,5 @@ const Membership = () => {
     </section>
   );
 };
+
 export default Membership;

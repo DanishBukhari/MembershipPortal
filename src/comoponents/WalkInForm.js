@@ -10,6 +10,7 @@ const WalkInForm = () => {
   const [phone, setPhone] = useState('');
   const [numAdults, setNumAdults] = useState(1);
   const [numChildren, setNumChildren] = useState(0);
+  const [selectedDate, setSelectedDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const WalkInForm = () => {
   const totalPrice = (numAdults * 7 + numChildren * 3.5).toFixed(2);
 
   const handlePayNow = async () => {
-    if (!name || !email || !phone) {
+    if (!name || !email || !phone || !selectedDate) {
       toast.error('Please fill in all required fields.');
       return;
     }
@@ -30,6 +31,7 @@ const WalkInForm = () => {
         tier: 'walk-in',
         numAdults,
         numChildren,
+        selectedDate,
       });
       if (response.data.error) {
         toast.error(response.data.error);
@@ -37,7 +39,7 @@ const WalkInForm = () => {
         return;
       }
       const totalAmount = (numAdults * 7 + numChildren * 3.5) * 100; // in cents
-      navigate('/checkout', { state: { tier: 'walk-in', name, email, phone, totalAmount } });
+      navigate('/checkout', { state: { tier: 'walk-in', name, email, phone, totalAmountInCents: totalAmount } });
     } catch (err) {
       toast.error('Error registering walk-in. Please try again.');
     } finally {
@@ -46,7 +48,7 @@ const WalkInForm = () => {
   };
 
   const handlePayAtCounter = async () => {
-    if (!name || !email || !phone) {
+    if (!name || !email || !phone || !selectedDate) {
       toast.error('Please fill in all required fields.');
       return;
     }
@@ -60,13 +62,14 @@ const WalkInForm = () => {
         paymentMethod: 'cash',
         numAdults,
         numChildren,
+        selectedDate,
       });
       if (response.data.error) {
         toast.error(response.data.error);
         setLoading(false);
         return;
       }
-      setShowMessage(true);
+      setShowMessage(`Please pay $${totalPrice} at the counter for ${numAdults} adult(s) and ${numChildren} child(ren).`);
       toast.success('Registered! Please pay at the counter.');
     } catch (err) {
       toast.error('Error registering walk-in. Please try again.');
@@ -117,6 +120,17 @@ const WalkInForm = () => {
               />
             </div>
             <div>
+              <label className="block text-[#CF066C] font-medium">Select Date</label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                min={new Date().toISOString().split("T")[0]}
+                className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
+                required
+              />
+            </div>
+            <div>
               <label className="block text-[#CF066C] font-medium">Number of Adults</label>
               <input
                 type="number"
@@ -153,7 +167,7 @@ const WalkInForm = () => {
             </button>
             {showMessage && (
               <div className="mt-4 p-4 bg-green-100 text-green-700 rounded">
-                Please go ahead to pay at the counter.
+                {showMessage}
               </div>
             )}
           </div>
