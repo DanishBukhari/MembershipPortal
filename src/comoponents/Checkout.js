@@ -26,41 +26,38 @@ const totalPrice = memberships && memberships.length > 0
   : (typeof totalAmountInCents === 'number' ? (totalAmountInCents / 100).toFixed(2) : '0.00');
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!stripe || !elements) return;
+    e.preventDefault();
+    if (!stripe || !elements) return;
 
-  const { error, paymentMethod } = await stripe.createPaymentMethod({
-    type: 'card',
-    card: elements.getElement(CardElement),
-  });
-
-  if (error) {
-    console.error('Error creating payment method:', error);
-    toast.error(error.message);
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/payment', {
-      paymentMethodId: paymentMethod.id,
-      memberships: memberships || ['walk-in'],
-      name,
-      email,
-      phone,
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: elements.getElement(CardElement),
     });
 
-    // Navigate with query parameter for walk-ins
-    const isWalkIn = tier === 'walk-in' || (memberships && memberships.includes('walk-in'));
-    const thankYouPath = isWalkIn ? '/thank-you?type=walkin' : '/thank-you';
-    navigate(thankYouPath);
-  } catch (err) {
-    toast.error('Payment failed. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
+    if (error) {
+      console.error('Error creating payment method:', error);
+      toast.error(error.message);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/payment', {
+        paymentMethodId: paymentMethod.id,
+        memberships: memberships || ['walk-in'], // Default to ['walk-in'] if no memberships
+        name,
+        email,
+        phone,
+      });
+      navigate('/thank-you');
+    } catch (err) {
+      toast.error('Payment failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto py-12 bg-[#FFFFFF] min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
