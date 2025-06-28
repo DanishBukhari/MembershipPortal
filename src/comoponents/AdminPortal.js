@@ -20,32 +20,26 @@ const AdminPortal = () => {
   };
 
   const checkVisit = async () => {
-    const now = new Date();
-    const lastCheck = new Date(selectedUser.lastCheck);
-    const hoursDiff = (now - lastCheck) / (1000 * 60 * 60);
-
-    if (hoursDiff > 24 && selectedUser.visitsLeft > 0) {
-      try {
-        await axios.post("https://membershiportal-c3069d3050e8.herokuapp.com/api/check-visit", {
-          userId: selectedUser._id,
-        });
-        toast.success("Visit deducted successfully!");
-        const res = await axios.get(
-          `https://membershiportal-c3069d3050e8.herokuapp.com/api/admin/user?phone=${phone}`
-        );
-        setSelectedUser(res.data);
-      } catch (err) {
-        toast.error("Error deducting visit.");
-      }
-    } else {
-      toast.info("No visit deduction needed.");
+    try {
+      await axios.post("https://membershiportal-c3069d3050e8.herokuapp.com/api/check-visit", {
+        userId: selectedUser._id,
+      });
+      toast.success("Visit checked successfully!");
+      const res = await axios.get(
+        `https://membershiportal-c3069d3050e8.herokuapp.com/api/admin/user?phone=${phone}`
+      );
+      setSelectedUser(res.data);
+    } catch (err) {
+      toast.error("Error checking visit.");
     }
   };
 
-  const confirmCashPayment = async () => {
+  const confirmCashPayment = async (membershipId, isFamily = false, familyMemberId) => {
     try {
       await axios.post("https://membershiportal-c3069d3050e8.herokuapp.com/api/confirm-cash-payment", {
         userId: selectedUser._id,
+        membershipId: isFamily ? familyMemberId : membershipId,
+        isFamily,
       });
       toast.success("Cash payment confirmed!");
       const res = await axios.get(
@@ -54,6 +48,19 @@ const AdminPortal = () => {
       setSelectedUser(res.data);
     } catch (err) {
       toast.error("Error confirming payment.");
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      await axios.delete("https://membershiportal-c3069d3050e8.herokuapp.com/api/admin/delete-user", {
+        data: { userId: selectedUser._id },
+      });
+      toast.success("User deleted successfully!");
+      setIsModalOpen(false);
+      setSelectedUser(null);
+    } catch (err) {
+      toast.error("Error deleting user");
     }
   };
 
@@ -82,73 +89,118 @@ const AdminPortal = () => {
             Search
           </button>
         </div>
+
         {isModalOpen && selectedUser && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg overflow-y-auto max-h-[80vh]">
               <h3 className="text-2xl font-bold text-[#CF066C] mb-4">
-                User Details
+                Primary Member Details
               </h3>
-              {selectedUser.tier === "walk-in" &&
-                selectedUser.paymentStatus === "pending" && (
-                  <div className="mt-4">
-                    <label>
-                      <input type="checkbox" onChange={confirmCashPayment} />{" "}
-                      Cash Paid
-                    </label>
-                  </div>
-                )}
-              <p>
-                <strong>Name:</strong> {selectedUser.name}
-              </p>
-              <p>
-                <strong>Status:</strong> {selectedUser.paymentStatus}
-              </p>
-              <p>
-                <strong>Tier:</strong> {selectedUser.tier}
-              </p>
-              <p>
-                <strong>Visits Left:</strong> {selectedUser.visitsLeft}
-              </p>
-              <p>
-                <strong>Expiry:</strong>{" "}
-                {new Date(selectedUser.expiry).toLocaleDateString()}
-              </p>
-              <img
-                src={selectedUser.photo}
-                alt="Profile"
-                className="w-24 h-24 rounded-full mt-2"
-              />
-              <h4 className="mt-4 font-bold">Family Members</h4>
-              {selectedUser.family.map((member, idx) => (
-                <div key={idx}>
-                  <p>
-                    <strong>Name:</strong> {member.name}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {member.email}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> {member.phone}
-                  </p>
+              <div className="mb-4">
+                <p><strong>Total Members:</strong> {1 + (selectedUser.family ? selectedUser.family.length : 0)}</p>
+                <p><strong>Name:</strong> {selectedUser.name}</p>
+                <p><strong>Phone:</strong> {selectedUser.phone}</p>
+                {selectedUser.photo && (
                   <img
-                    src={member.photo}
-                    alt={member.name}
-                    className="w-16 h-16 rounded-full"
+                    src={selectedUser.photo}
+                    alt="Primary Member"
+                    className="w-24 h-24 rounded-full mt-2"
                   />
-                </div>
-              ))}
-              <button
-                onClick={checkVisit}
-                className="mt-4 px-4 py-2 bg-[#CF066C] text-white rounded-md"
-              >
-                Check Visit
-              </button>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="mt-4 ml-4 px-4 py-2 bg-[#CF066C] text-white rounded-md"
-              >
-                Close
-              </button>
+                )}
+                {selectedUser.memberships.map((m, idx) => (
+                  <div key={idx} className="mt-2">
+                    <p><strong>Membership Type:</strong> {m.tier}</p>
+                    {m.tier === "walk-in" && (
+                      <>
+                        <p><strong>Number of Adults:</strong> {selectedUser.numAdults}</p>
+                        <p><strong>Number of Children:</strong> {selectedUser.numChildren}</p>
+                        {m.paymentStatus === "pending" && (
+                          <p><strong>Total Amount Due:</strong> ${(selectedUser.numAdults * 7 + selectedUser.numChildren * 3.5).toFixed(2)}</p>
+                        )}
+                        <p><strong>Booking Date:</strong> {new Date(m.createdAt).toLocaleDateString()}</p>
+                        <p><strong>Expiry Date:</strong> {new Date(m.expiry).toLocaleDateString('en-GB', { timeZone: 'UTC' })}</p>
+                      </>
+                    )}
+                    <p><strong>Visits Left:</strong> {m.visitsLeft === Infinity ? "Unlimited" : m.visitsLeft === 0 ? "Maxed Out" : m.visitsLeft}</p>
+                    {m.paymentStatus === "active" ? (
+                      <p className="text-green-500"><strong>Payment:</strong> Done</p>
+                    ) : (
+                      <p className="text-red-500"><strong>Payment:</strong> Pending</p>
+                    )}
+                    {m.tier === "walk-in" && m.paymentStatus === "pending" && (
+                      <button
+                        onClick={() => confirmCashPayment(m._id)}
+                        className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+                      >
+                        Mark as Paid
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <h4 className="text-xl font-bold text-[#CF066C] mb-4">Family Members</h4>
+              {selectedUser.family && selectedUser.family.length > 0 ? (
+                selectedUser.family.map((member, idx) => (
+                  <div key={idx} className="mb-4 border-t pt-4">
+                    <p><strong>Name:</strong> {member.name}</p>
+                    <p><strong>Relationship:</strong> {member.relationship}</p>
+                    {member.photo && (
+                      <img
+                        src={member.photo}
+                        alt={member.name}
+                        className="w-16 h-16 rounded-full mt-2"
+                      />
+                    )}
+                    <p><strong>Membership Type:</strong> {member.tier}</p>
+                    {member.tier === "walk-in" && (
+                      <>
+                        <p><strong>Booking Date:</strong> {new Date(member.createdAt).toLocaleDateString()}</p>
+                        <p><strong>Expiry Date:</strong> {new Date(member.expiry).toLocaleDateString()}</p>
+                      </>
+                    )}
+                    <p><strong>Visits Left:</strong> {member.visitsLeft === Infinity ? "Unlimited" : member.visitsLeft === 0 ? "Maxed Out" : member.visitsLeft}</p>
+                    {member.paymentStatus === "active" ? (
+                      <p className="text-green-500"><strong>Payment:</strong> Done</p>
+                    ) : (
+                      <p className="text-red-500"><strong>Payment:</strong> Pending</p>
+                    )}
+                    {member.paymentStatus === "pending" && (
+                      <button
+                        onClick={() => confirmCashPayment(null, true, member._id)}
+                        className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+                      >
+                        Mark as Paid
+                      </button>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p>No family members found.</p>
+              )}
+
+              <div className="mt-6 flex space-x-4 w-full">
+                <button
+                  onClick={checkVisit}
+                  className="px-4 py-2 bg-[#CF066C] text-white rounded-md hover:bg-[#EDEC25] hover:text-[#CF066C] transition"
+                >
+                  Check Visit
+                </button>
+                {selectedUser.paymentStatus === "expired" && (
+                  <button
+                    onClick={handleDeleteUser}
+                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+                  >
+                    Delete User
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 bg-[#CF066C] text-white rounded-md hover:bg-[#EDEC25] hover:text-[#CF066C] transition"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}
