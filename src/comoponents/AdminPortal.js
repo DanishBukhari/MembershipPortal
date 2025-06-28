@@ -109,7 +109,7 @@ const AdminPortal = () => {
                 )}
                 {selectedUser.memberships.map((m, idx) => (
                   <div key={idx} className="mt-2">
-                    <p><strong>Membership Type:</strong> {m.tier}</p>
+                    <p><strong>Membership Type:</strong> {m.tier.toUpperCase()}</p>
                     {m.tier === "walk-in" && (
                       <>
                         <p><strong>Number of Adults:</strong> {selectedUser.numAdults}</p>
@@ -127,7 +127,7 @@ const AdminPortal = () => {
                     ) : (
                       <p className="text-red-500"><strong>Payment:</strong> Pending</p>
                     )}
-                    {m.tier === "walk-in" && m.paymentStatus === "pending" && (
+                    {m.paymentStatus === "pending" && (
                       <button
                         onClick={() => confirmCashPayment(m._id)}
                         className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
@@ -152,11 +152,11 @@ const AdminPortal = () => {
                         className="w-16 h-16 rounded-full mt-2"
                       />
                     )}
-                    <p><strong>Membership Type:</strong> {member.tier}</p>
+                    <p><strong>Membership Type:</strong> {member.tier.toUpperCase()}</p>
                     {member.tier === "walk-in" && (
                       <>
                         <p><strong>Booking Date:</strong> {new Date(member.createdAt).toLocaleDateString()}</p>
-                        <p><strong>Expiry Date:</strong> {new Date(member.expiry).toLocaleDateString()}</p>
+                        <p><strong>Expiry Date:</strong> {new Date(member.expiry).toLocaleDateString('en-GB', { timeZone: 'UTC' })}</p>
                       </>
                     )}
                     <p><strong>Visits Left:</strong> {member.visitsLeft === Infinity ? "Unlimited" : member.visitsLeft === 0 ? "Maxed Out" : member.visitsLeft}</p>
