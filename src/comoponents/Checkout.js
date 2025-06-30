@@ -11,8 +11,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "react-toastify";
 
 const stripePromise = loadStripe(
-  // "pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy",
-  "pk_live_51NId1VF0l9A7Fv7kgARqU4B2QgJ5QKXqMe3V5jNJNaS0WgvZ9PFvxgauwbbVz5ymnZJE400mSB3asdIkRWrVWUUK00enIWxdtQsk_live_51NId1VF0l9A7Fv7k5sT6YX7Mqm4aOBrHKBuJHvZOEYwRzLx",
+  "pk_live_51NId1VF0l9A7Fv7kgARqU4B2QgJ5QKXqMe3V5jNJNaS0WgvZ9PFvxgauwbbVz5ymnZJE400mSB3asdIkRWrVWUUK00enIWxdtQ",
 );
 
 const CheckoutForm = () => {
