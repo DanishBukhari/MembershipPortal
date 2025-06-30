@@ -13,7 +13,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://membershiportal-c3069d3050e8.herokuapp.com/api/login", { email, password });
+      const res = await axios.post(
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/login",
+        {
+          email,
+          password,
+        },
+      );
       localStorage.setItem("token", res.data.token);
       toast.success("Logged in successfully!");
       navigate("/portal");
@@ -28,7 +34,12 @@ const Login = () => {
 
   const handleForgotPassword = async () => {
     try {
-      await axios.post("https://membershiportal-c3069d3050e8.herokuapp.com/api/forgot-password", { email: forgotEmail });
+      await axios.post(
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/forgot-password",
+        {
+          email: forgotEmail,
+        },
+      );
       toast.success("Password reset email sent. Check your inbox.");
       setShowForgotPassword(false);
       setForgotEmail("");
@@ -40,7 +51,9 @@ const Login = () => {
   return (
     <div className="container mx-auto py-12 bg-[#FFFFFF] min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">Login to Client Portal</h2>
+        <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">
+          Login to Client Portal
+        </h2>
         {!showForgotPassword ? (
           <div className="space-y-4">
             <div>
@@ -54,7 +67,9 @@ const Login = () => {
               />
             </div>
             <div>
-              <label className="block text-[#CF066C] font-medium">Password</label>
+              <label className="block text-[#CF066C] font-medium">
+                Password
+              </label>
               <input
                 type="password"
                 value={password}
@@ -71,13 +86,20 @@ const Login = () => {
               Login
             </button>
             <p className="text-center mt-2">
-              <button onClick={() => setShowForgotPassword(true)} className="text-[#CF066C] underline">Forgot Password?</button>
+              <button
+                onClick={() => setShowForgotPassword(true)}
+                className="text-[#CF066C] underline"
+              >
+                Forgot Password?
+              </button>
             </p>
           </div>
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-[#CF066C] font-medium">Enter Your Email</label>
+              <label className="block text-[#CF066C] font-medium">
+                Enter Your Email
+              </label>
               <input
                 type="email"
                 value={forgotEmail}
@@ -94,7 +116,12 @@ const Login = () => {
               Send Reset Email
             </button>
             <p className="text-center mt-2">
-              <button onClick={() => setShowForgotPassword(false)} className="text-[#CF066C] underline">Back to Login</button>
+              <button
+                onClick={() => setShowForgotPassword(false)}
+                className="text-[#CF066C] underline"
+              >
+                Back to Login
+              </button>
             </p>
           </div>
         )}

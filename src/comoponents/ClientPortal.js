@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Stripe from "stripe";
 
-const stripe = new Stripe(
-  process.env.REACT_APP_STRIPE_SECRET_KEY)
+const stripe = new Stripe(process.env.REACT_APP_STRIPE_SECRET_KEY);
 
 const ClientPortal = () => {
   const navigate = useNavigate();
@@ -57,40 +56,40 @@ const ClientPortal = () => {
     };
     return isDiscounted ? priceMap[tier].discounted : priceMap[tier].full;
   };
-  
+
   useEffect(() => {
     const fetchPrices = async () => {
-        try {
-          const priceIds = [
-            getStripePriceId("supporter"),
-            getStripePriceId("supporter", true),
-            getStripePriceId("leader"),
-            getStripePriceId("leader", true),
-            getStripePriceId("legacy-maker"),
-            getStripePriceId("legacy-maker", true),
-          ];
-          const pricePromises = priceIds.map((id) => stripe.prices.retrieve(id));
-          const priceData = await Promise.all(pricePromises);
-          const priceMap = {};
-          priceData.forEach((price) => {
-            const tier = price.nickname || price.product.name;
-            const isDiscounted = price.id.includes("discounted");
-            priceMap[price.id] = {
-              amount: price.unit_amount / 100,
-              currency: price.currency,
-              tier,
-              isDiscounted,
-            };
-          });
-          setPrices(priceMap);
-        } catch (err) {
-          console.error("Error fetching prices:", err);
-          toast.error("Failed to load subscription prices.");
-        }
-      };
+      try {
+        const priceIds = [
+          getStripePriceId("supporter"),
+          getStripePriceId("supporter", true),
+          getStripePriceId("leader"),
+          getStripePriceId("leader", true),
+          getStripePriceId("legacy-maker"),
+          getStripePriceId("legacy-maker", true),
+        ];
+        const pricePromises = priceIds.map((id) => stripe.prices.retrieve(id));
+        const priceData = await Promise.all(pricePromises);
+        const priceMap = {};
+        priceData.forEach((price) => {
+          const tier = price.nickname || price.product.name;
+          const isDiscounted = price.id.includes("discounted");
+          priceMap[price.id] = {
+            amount: price.unit_amount / 100,
+            currency: price.currency,
+            tier,
+            isDiscounted,
+          };
+        });
+        setPrices(priceMap);
+      } catch (err) {
+        console.error("Error fetching prices:", err);
+        toast.error("Failed to load subscription prices.");
+      }
+    };
     if (token) {
       axios
-        .get("https://membershiportal-c3069d3050e8.herokuapp.com/api/user", {
+        .get("https://membership-new-07a345e01ba7.herokuapp.com/api/user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -108,7 +107,7 @@ const ClientPortal = () => {
                 name: "",
                 relationship: "",
                 photo: null,
-              }))
+              })),
             );
           }
           fetchSubscription(token);
@@ -136,10 +135,10 @@ const ClientPortal = () => {
   const fetchSubscription = async (tokenValue) => {
     try {
       const res = await axios.get(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/subscription",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/subscription",
         {
           headers: { Authorization: `Bearer ${tokenValue}` },
-        }
+        },
       );
       setSubscription(res.data);
     } catch (err) {
@@ -150,10 +149,10 @@ const ClientPortal = () => {
   const fetchInvoices = async (tokenValue) => {
     try {
       const res = await axios.get(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/invoices",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/invoices",
         {
           headers: { Authorization: `Bearer ${tokenValue}` },
-        }
+        },
       );
       setInvoices(res.data.data);
     } catch (err) {
@@ -167,11 +166,11 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/upload-photo",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
       setPhoto(res.data.photoUrl);
       toast.success("Photo uploaded successfully!");
@@ -186,11 +185,11 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/upload-photo",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
       if (index === -1) {
         setFamilyMember({ ...familyMember, photo: res.data.photoUrl });
@@ -216,7 +215,7 @@ const ClientPortal = () => {
     }
     try {
       await axios.put(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/user",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/user",
         {
           email: user.email,
           photo,
@@ -226,11 +225,11 @@ const ClientPortal = () => {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       for (const member of familyMembersToAdd) {
         await axios.post(
-          "https://membershiportal-c3069d3050e8.herokuapp.com/api/family",
+          "https://membership-new-07a345e01ba7.herokuapp.com/api/family",
           {
             name: member.name,
             relationship: member.relationship,
@@ -240,16 +239,16 @@ const ClientPortal = () => {
           },
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
       }
       setShowProfileCompletion(false);
       toast.success("Profile updated successfully!");
       const res = await axios.get(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/user",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/user",
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       setUser(res.data);
       setFamily(res.data.family);
@@ -265,14 +264,14 @@ const ClientPortal = () => {
     }
     try {
       await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/change-password",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/change-password",
         {
           currentPassword,
           newPassword,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       toast.success("Password changed successfully!");
       setCurrentPassword("");
@@ -294,14 +293,14 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/family",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/family",
         {
           ...familyMember,
           userId: user._id,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       setFamily([...family, res.data]);
       toast.success("Family member added successfully!");
@@ -322,17 +321,17 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.put(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/family",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/family",
         {
           ...editFamilyMember,
           userId: user._id,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       const updatedFamily = family.map((member) =>
-        member._id === editFamilyMember._id ? res.data : member
+        member._id === editFamilyMember._id ? res.data : member,
       );
       setFamily(updatedFamily);
       toast.success("Family member updated successfully!");
@@ -345,22 +344,22 @@ const ClientPortal = () => {
   const changeTier = async (currentTier, newTier, memberId) => {
     try {
       const response = await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/subscription/change-tier",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/subscription/change-tier",
         { currentTier, newTier, memberId },
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.data.success) {
         toast.success("Tier changed successfully!");
         const userRes = await axios.get(
-          "https://membershiportal-c3069d3050e8.herokuapp.com/api/user",
+          "https://membership-new-07a345e01ba7.herokuapp.com/api/user",
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         setUser(userRes.data);
         setFamily(userRes.data.family);
@@ -371,7 +370,10 @@ const ClientPortal = () => {
       }
     } catch (error) {
       console.error("Change tier error:", error);
-      toast.error("Error changing tier: " + (error.response?.data?.error || error.message));
+      toast.error(
+        "Error changing tier: " +
+          (error.response?.data?.error || error.message),
+      );
     }
   };
 
@@ -380,25 +382,25 @@ const ClientPortal = () => {
       window.confirm(
         `Are you sure you want to cancel the subscription for ${member.name}? ${
           member.isPrimary ? "This will cancel the entire subscription." : ""
-        }`
+        }`,
       )
     ) {
       try {
         await axios.post(
-          "https://membershiportal-c3069d3050e8.herokuapp.com/api/subscription/cancel-member",
+          "https://membership-new-07a345e01ba7.herokuapp.com/api/subscription/cancel-member",
           {
             memberId: member.isPrimary ? null : member.id,
           },
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         toast.success(`Subscription cancelled for ${member.name}.`);
         const res = await axios.get(
-          "https://membershiportal-c3069d3050e8.herokuapp.com/api/user",
+          "https://membership-new-07a345e01ba7.herokuapp.com/api/user",
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         setUser(res.data);
         setFamily(res.data.family);
@@ -1134,7 +1136,7 @@ const ClientPortal = () => {
                                 tier,
                                 selectedMember.isPrimary
                                   ? null
-                                  : selectedMember.id
+                                  : selectedMember.id,
                               )
                             }
                             className="mt-2 w-full px-3 py-1 bg-[#5EBAFF] text-white rounded-md hover:bg-[#4CA7E6] transition text-sm font-semibold"
@@ -1189,7 +1191,7 @@ const ClientPortal = () => {
                                 tier,
                                 selectedMember.isPrimary
                                   ? null
-                                  : selectedMember.id
+                                  : selectedMember.id,
                               )
                             }
                             className="mt-2 w-full px-3 py-1 bg-[#5 YeatsBAFF] text-white rounded-md hover:bg-[#4CA7E6] transition text-sm font-semibold"

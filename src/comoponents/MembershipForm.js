@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MembershipForm = () => {
   const { tier } = useParams();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [primaryTier, setPrimaryTier] = useState(tier || 'legacy-maker');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [primaryTier, setPrimaryTier] = useState(tier || "legacy-maker");
   const [familyMemberships, setFamilyMemberships] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const membershipOptions = ['legacy-maker', 'leader', 'supporter'];
+  const membershipOptions = ["legacy-maker", "leader", "supporter"];
 
   const addFamilyMembership = () => {
-    setFamilyMemberships([...familyMemberships, 'legacy-maker']);
+    setFamilyMemberships([...familyMemberships, "legacy-maker"]);
   };
 
   const updateFamilyMembershipTier = (index, newTier) => {
@@ -32,21 +32,26 @@ const MembershipForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !email || !phone) {
-      toast.error('Please fill in all required fields.');
+      toast.error("Please fill in all required fields.");
       return;
     }
     setLoading(true);
     try {
       const memberships = [primaryTier, ...familyMemberships];
-      await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/users', {
-        name,
-        email,
-        phone,
-        memberships
-      });
-      navigate('/checkout', { state: { memberships, name, email, phone } });
+      await axios.post(
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/users",
+        {
+          name,
+          email,
+          phone,
+          memberships,
+        },
+      );
+      navigate("/checkout", { state: { memberships, name, email, phone } });
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Error registering. Please try again.');
+      toast.error(
+        err.response?.data?.error || "Error registering. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -55,7 +60,9 @@ const MembershipForm = () => {
   return (
     <div className="container mx-auto py-12 bg-[#FFFFFF] min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">Enter Your Details</h2>
+        <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">
+          Enter Your Details
+        </h2>
         {loading ? (
           <div className="flex justify-center items-center">
             <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-pink-600 border-r-transparent"></div>
@@ -83,7 +90,9 @@ const MembershipForm = () => {
               />
             </div>
             <div>
-              <label className="block text-[#CF066C] font-medium">Phone Number</label>
+              <label className="block text-[#CF066C] font-medium">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 value={phone}
@@ -93,28 +102,38 @@ const MembershipForm = () => {
               />
             </div>
             <div>
-              <label className="block text-[#CF066C] font-medium">Your Membership</label>
+              <label className="block text-[#CF066C] font-medium">
+                Your Membership
+              </label>
               <select
                 value={primaryTier}
                 onChange={(e) => setPrimaryTier(e.target.value)}
                 className="w-full p-2 mt-1 border border-gray-300 rounded-md"
               >
                 {membershipOptions.map((option) => (
-                  <option key={option} value={option}>{option.toUpperCase()}</option>
+                  <option key={option} value={option}>
+                    {option.toUpperCase()}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-[#CF066C] font-medium">Family Memberships</label>
+              <label className="block text-[#CF066C] font-medium">
+                Family Memberships
+              </label>
               {familyMemberships.map((tier, index) => (
                 <div key={index} className="flex space-x-2 mt-2">
                   <select
                     value={tier}
-                    onChange={(e) => updateFamilyMembershipTier(index, e.target.value)}
+                    onChange={(e) =>
+                      updateFamilyMembershipTier(index, e.target.value)
+                    }
                     className="p-2 border border-gray-300 rounded-md"
                   >
                     {membershipOptions.map((option) => (
-                      <option key={option} value={option}>{option.toUpperCase()}</option>
+                      <option key={option} value={option}>
+                        {option.toUpperCase()}
+                      </option>
                     ))}
                   </select>
                   <button

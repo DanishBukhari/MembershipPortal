@@ -25,7 +25,8 @@ const WalkInForm = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in",
+        // "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
         {
           name,
           email,
@@ -34,7 +35,7 @@ const WalkInForm = () => {
           numAdults,
           numChildren,
           selectedDate,
-        }
+        },
       );
       if (response.data.error) {
         toast.error(response.data.error);
@@ -66,7 +67,8 @@ const WalkInForm = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://membershiportal-c3069d3050e8.herokuapp.com/api/walk-in",
+        // "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
         {
           name,
           email,
@@ -76,7 +78,7 @@ const WalkInForm = () => {
           numAdults,
           numChildren,
           selectedDate,
-        }
+        },
       );
       if (response.data.error) {
         toast.error(response.data.error);
@@ -84,7 +86,7 @@ const WalkInForm = () => {
         return;
       }
       setShowMessage(
-        `Please pay $${totalPrice} at the counter for ${numAdults} adult(s) and ${numChildren} child(ren).`
+        `Please pay $${totalPrice} at the counter for ${numAdults} adult(s) and ${numChildren} child(ren).`,
       );
       toast.success("Registered! Please pay at the counter.");
     } catch (err) {

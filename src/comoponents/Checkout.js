@@ -1,41 +1,54 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import axios from 'axios';
-import { loadStripe } from '@stripe/stripe-js';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import axios from "axios";
+import { loadStripe } from "@stripe/stripe-js";
+import { toast } from "react-toastify";
 
-const stripePromise = loadStripe('pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy');
+const stripePromise = loadStripe(
+  "pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy",
+);
 
 const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const location = useLocation();
   const navigate = useNavigate();
-  const { memberships, name, email, phone, totalAmountInCents, tier } = location.state || {};
-  const prices = { 'legacy-maker': 35, 'leader': 20, 'supporter': 8, 'walk-in': 7 };
+  const { memberships, name, email, phone, totalAmountInCents, tier } =
+    location.state || {};
+  const prices = { "legacy-maker": 35, leader: 20, supporter: 8, "walk-in": 7 };
   const [loading, setLoading] = useState(false);
 
   // Calculate total price: for memberships, first at full price, others at 50% off; for walk-ins, use totalAmountInCents
-const totalPrice = memberships && memberships.length > 0
-  ? memberships.reduce((total, tier, index) => {
-      const basePrice = prices[tier];
-      const price = index === 0 ? basePrice : basePrice * 0.5;
-      return total + price;
-    }, 0).toFixed(2)
-  : (typeof totalAmountInCents === 'number' ? (totalAmountInCents / 100).toFixed(2) : '0.00');
+  const totalPrice =
+    memberships && memberships.length > 0
+      ? memberships
+          .reduce((total, tier, index) => {
+            const basePrice = prices[tier];
+            const price = index === 0 ? basePrice : basePrice * 0.5;
+            return total + price;
+          }, 0)
+          .toFixed(2)
+      : typeof totalAmountInCents === "number"
+      ? (totalAmountInCents / 100).toFixed(2)
+      : "0.00";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
 
     const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: 'card',
+      type: "card",
       card: elements.getElement(CardElement),
     });
 
     if (error) {
-      console.error('Error creating payment method:', error);
+      console.error("Error creating payment method:", error);
       toast.error(error.message);
       return;
     }
@@ -43,16 +56,19 @@ const totalPrice = memberships && memberships.length > 0
     setLoading(true);
 
     try {
-      await axios.post('https://membershiportal-c3069d3050e8.herokuapp.com/api/payment', {
-        paymentMethodId: paymentMethod.id,
-        memberships: memberships || ['walk-in'], // Default to ['walk-in'] if no memberships
-        name,
-        email,
-        phone,
-      });
-      navigate('/thank-you');
+      await axios.post(
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/payment",
+        {
+          paymentMethodId: paymentMethod.id,
+          memberships: memberships || ["walk-in"], // Default to ['walk-in'] if no memberships
+          name,
+          email,
+          phone,
+        },
+      );
+      navigate("/thank-you");
     } catch (err) {
-      toast.error('Payment failed. Please try again.');
+      toast.error("Payment failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -61,19 +77,26 @@ const totalPrice = memberships && memberships.length > 0
   return (
     <div className="container mx-auto py-12 bg-[#FFFFFF] min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">Checkout</h2>
+        <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">
+          Checkout
+        </h2>
         <div className="mb-4">
-          {tier === 'walk-in' ? (
+          {tier === "walk-in" ? (
             <p className="text-[#CF066C]">Walk-in Pass</p>
           ) : (
-            memberships && memberships.map((tier, index) => (
+            memberships &&
+            memberships.map((tier, index) => (
               <p key={index} className="text-[#CF066C]">
-                {index === 0 ? 'Primary Membership' : `Family Membership ${index}`}: {tier.toUpperCase()}
+                {index === 0
+                  ? "Primary Membership"
+                  : `Family Membership ${index}`}
+                : {tier.toUpperCase()}
               </p>
             ))
           )}
           <p className="text-[#CF066C] font-bold">
-            Total: ${totalPrice} {tier !== 'walk-in' ? "(recurring daily for testing)" : ""}
+            Total: ${totalPrice}{" "}
+            {tier !== "walk-in" ? "(recurring daily for testing)" : ""}
           </p>
         </div>
         {loading ? (
@@ -87,7 +110,7 @@ const totalPrice = memberships && memberships.length > 0
               className="p-2 border border-gray-300 rounded-md"
             />
             <button
-              style={{ border: '1px solid #CF066C' }}
+              style={{ border: "1px solid #CF066C" }}
               onClick={handleSubmit}
               disabled={!stripe || loading}
               className="w-full py-2 mt-4 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition duration-300 font-semibold"
