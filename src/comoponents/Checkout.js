@@ -66,7 +66,7 @@ const CheckoutForm = () => {
           phone,
         },
       );
-      navigate("/thank-you");
+      navigate("/thank-you", { state: { isWalkIn: tier === "walk-in" } });
     } catch (err) {
       toast.error("Payment failed. Please try again.");
     } finally {

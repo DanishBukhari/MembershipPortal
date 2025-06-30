@@ -8,19 +8,22 @@ const AdminPortal = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const [walkInBookings, setWalkInBookings] = useState([]);
+  const [showBookingsModal, setShowBookingsModal] = useState(false); // Renamed for clarity
 
   // Fetch all walk-in bookings when component mounts
   useEffect(() => {
     const fetchWalkInBookings = async () => {
       try {
-        const res = await axios.get("https://membership-new-07a345e01ba7.herokuapp.com/api/admin/walk-ins");
+        const res = await axios.get(
+          "https://membership-new-07a345e01ba7.herokuapp.com/api/admin/walk-ins",
+        );
         setWalkInBookings(res.data);
       } catch (err) {
         toast.error("Failed to fetch walk-in bookings");
       }
     };
     fetchWalkInBookings();
-  }, []);
+  }, [showBookingsModal]);
 
   const handleSearch = async () => {
     try {
@@ -36,9 +39,12 @@ const AdminPortal = () => {
 
   const checkVisit = async () => {
     try {
-      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/check-visit", {
-        userId: selectedUser._id,
-      });
+      await axios.post(
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/check-visit",
+        {
+          userId: selectedUser._id,
+        },
+      );
       toast.success("Visit checked successfully!");
       const res = await axios.get(
         `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
@@ -55,11 +61,14 @@ const AdminPortal = () => {
     familyMemberId,
   ) => {
     try {
-      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/confirm-cash-payment", {
-        userId: selectedUser._id,
-        membershipId: isFamily ? familyMemberId : membershipId,
-        isFamily,
-      });
+      await axios.post(
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/confirm-cash-payment",
+        {
+          userId: selectedUser._id,
+          membershipId: isFamily ? familyMemberId : membershipId,
+          isFamily,
+        },
+      );
       toast.success("Cash payment confirmed!");
       const res = await axios.get(
         `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
@@ -72,9 +81,12 @@ const AdminPortal = () => {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete("https://membership-new-07a345e01ba7.herokuapp.com/api/admin/delete-user", {
-        data: { userId: selectedUser._id },
-      });
+      await axios.delete(
+        "https://membership-new-07a345e01ba7.herokuapp.com/api/admin/delete-user",
+        {
+          data: { userId: selectedUser._id },
+        },
+      );
       toast.success("User deleted successfully!");
       setIsModalOpen(false);
       setSelectedUser(null);
@@ -88,6 +100,7 @@ const AdminPortal = () => {
       <h2 className="text-3xl font-bold text-center text-[#CF066C] mb-6">
         Admin Portal
       </h2>
+
       <div className="mt-8 max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
         <div className="space-y-4">
           <div>
@@ -166,10 +179,7 @@ const AdminPortal = () => {
                         {m.paymentStatus === "pending" && (
                           <p>
                             <strong>Total Amount Due:</strong> $
-                            {(
-                              m.numAdults * 7 +
-                              m.numChildren * 3.5
-                            ).toFixed(2)}
+                            {(m.numAdults * 7 + m.numChildren * 3.5).toFixed(2)}
                           </p>
                         )}
                       </>
@@ -184,14 +194,14 @@ const AdminPortal = () => {
                         timeZone: "UTC",
                       })}
                     </p>
-                    <p>
+                    {/* <p>
                       <strong>Visits Left:</strong>{" "}
                       {m.visitsLeft === Infinity
                         ? "Unlimited"
                         : m.visitsLeft === 0
                         ? "Maxed Out"
                         : m.visitsLeft}
-                    </p>
+                    </p> */}
                     <p
                       className={`${
                         m.paymentStatus === "active"
@@ -312,118 +322,150 @@ const AdminPortal = () => {
         )}
       </div>
       {/* Right column - Walk-in Bookings */}
-      <div className="w-full absolute -top-20 -right-20 lg:w-[35%] bg-white rounded-lg shadow-lg p-6 z-0">
-        <h3 className="text-2xl font-bold text-[#CF066C] mb-4">
-          Walk-in Bookings (Newest First)
-        </h3>
+      <button
+        onClick={() => setShowBookingsModal(true)}
+        className="px-4 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#EDEC25] hover:text-[#CF066C] transition absolute top-4 right-4"
+      >
+        Show All Walk-in Bookings
+      </button>
+      {/* Walk-in Bookings Modal */}
+      {showBookingsModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-6xl w-full max-h-[80vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold text-[#CF066C]">
+                Walk-in Bookings (Newest First)
+              </h3>
+              <button
+                onClick={() => setShowBookingsModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
 
-        {walkInBookings.length === 0 ? (
-          <p className="text-gray-500">No walk-in bookings found</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Phone
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Booking Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Expiry
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Adults/Children
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amount Due
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Payment
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {[...walkInBookings]
-                  .sort(
-                    (a, b) =>
-                      new Date(b.membership.createdAt) -
-                      new Date(a.membership.createdAt),
-                  )
-                  .map((booking) => (
-                    <tr key={booking._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          {booking.user.photo && (
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <img
-                                className="h-10 w-10 rounded-full"
-                                src={booking.user.photo}
-                                alt={booking.user.name}
-                              />
-                            </div>
-                          )}
-                          <div className="ml-2">
-                            <div className="text-sm font-medium text-gray-900">
-                              {booking.user.name}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {booking.user.phone}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(
-                          booking.membership.createdAt,
-                        ).toLocaleDateString()}
-                        <div className="text-xs text-gray-400">
-                          {new Date(
-                            booking.membership.createdAt,
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(booking.membership.expiry).toLocaleDateString(
-                          "en-GB",
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {booking.membership.numAdults} /{" "}
-                        {booking.membership.numChildren}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        $
-                        {(
-                          booking.membership.numAdults * 7 +
-                          booking.membership.numChildren * 3.5
-                        ).toFixed(2)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            booking.membership.paymentStatus === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {booking.membership.paymentStatus}
-                        </span>
-                      </td>
+            {walkInBookings.length === 0 ? (
+              <p className="text-gray-500">No walk-in bookings found</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Phone
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Booking Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Expiry
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Adults/Children
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Amount Due
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Payment
+                      </th>
                     </tr>
-                  ))}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {[...walkInBookings]
+                      .sort(
+                        (a, b) =>
+                          new Date(b.membership.createdAt) -
+                          new Date(a.membership.createdAt),
+                      )
+                      .map((booking) => (
+                        <tr key={booking._id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              {booking.user.photo && (
+                                <div className="flex-shrink-0 h-10 w-10">
+                                  <img
+                                    className="h-10 w-10 rounded-full"
+                                    src={booking.user.photo}
+                                    alt={booking.user.name}
+                                  />
+                                </div>
+                              )}
+                              <div className="ml-2">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {booking.user.name}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {booking.user.phone}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(
+                              booking.membership.createdAt,
+                            ).toLocaleDateString()}
+                            <div className="text-xs text-gray-400">
+                              {new Date(
+                                booking.membership.createdAt,
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(
+                              booking.membership.expiry,
+                            ).toLocaleDateString("en-GB")}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {booking.membership.numAdults} /{" "}
+                            {booking.membership.numChildren}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            $
+                            {(
+                              booking.membership.numAdults * 7 +
+                              booking.membership.numChildren * 3.5
+                            ).toFixed(2)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                booking.membership.paymentStatus === "active"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {booking.membership.paymentStatus}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

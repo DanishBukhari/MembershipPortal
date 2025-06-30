@@ -528,7 +528,10 @@ const ClientPortal = () => {
               style={{ height: "80vh" }}
             >
               <h3 className="text-2xl font-bold text-[#CF066C] mb-4">
-                Welcome {user.name.split(" ")[0]}! Let's Complete Your Profile
+                Welcome{" "}
+                {user.name.split(" ")[0].charAt(0).toUpperCase() +
+                  user.name.split(" ")[0].slice(1)}
+                ! Let's Complete Your Profile
               </h3>
               <div className="space-y-4">
                 <div>
@@ -636,7 +639,8 @@ const ClientPortal = () => {
             </h3>
             <div className="mb-4">
               <p>
-                <strong>Name:</strong> {user.name}
+                <strong>Name:</strong>{" "}
+                {user.name.charAt(0).toUpperCase() + user.name.slice(1)}
               </p>
               <p>
                 <strong>Email:</strong> {user.email}
@@ -661,7 +665,7 @@ const ClientPortal = () => {
                   </p>
                   <p>
                     <strong>Visits Left:</strong>{" "}
-                    {m.visitsLeft === Infinity
+                    {m.visitsLeft === Number.MAX_SAFE_INTEGER
                       ? "Unlimited"
                       : m.visitsLeft === 0
                       ? "Maxed Out"
@@ -700,7 +704,7 @@ const ClientPortal = () => {
                   </p>
                   <p>
                     <strong>Visits Left:</strong>{" "}
-                    {member.visitsLeft === Infinity
+                    {member.visitsLeft === Number.MAX_SAFE_INTEGER
                       ? "Unlimited"
                       : member.visitsLeft === 0
                       ? "Maxed Out"
@@ -741,7 +745,7 @@ const ClientPortal = () => {
                 <label className="block text-[#CF066C] font-medium">Name</label>
                 <input
                   type="text"
-                  value={user.name}
+                  value={user.name.charAt(0).toUpperCase() + user.name.slice(1)}
                   disabled
                   className="w-80 p-2 mt-1 border border-gray-300 rounded-md bg-gray-100"
                 />
@@ -892,24 +896,37 @@ const ClientPortal = () => {
               Invoices
             </h4>
             {invoices.map((invoice, idx) => (
-              <div key={idx} className="mb-2">
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {new Date(invoice.created * 1000).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>Amount:</strong> $
-                  {(invoice.amount_paid / 100).toFixed(2)} AUD
-                </p>
-                <a
-                  href={invoice.hosted_invoice_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#CF066C] underline"
-                >
-                  View Invoice
-                </a>
-              </div>
+              <table className="min-w-full table-auto border border-gray-300 mt-4">
+                <thead>
+                  <tr className="bg-gray-100 text-left">
+                    <th className="px-4 py-2 border-b">Date</th>
+                    <th className="px-4 py-2 border-b">Amount (AUD)</th>
+                    <th className="px-4 py-2 border-b">Invoice Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoices.map((invoice, idx) => (
+                    <tr key={idx} className="border-t hover:bg-gray-50">
+                      <td className="px-4 py-2 border-b">
+                        {new Date(invoice.created * 1000).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-2 border-b">
+                        ${(invoice.amount_paid / 100).toFixed(2)}
+                      </td>
+                      <td className="px-4 py-2 border-b">
+                        <a
+                          href={invoice.hosted_invoice_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#CF066C] underline"
+                        >
+                          View Invoice
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             ))}
           </div>
         )}

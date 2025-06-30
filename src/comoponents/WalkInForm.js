@@ -22,10 +22,15 @@ const WalkInForm = () => {
       toast.error("Please fill in all required fields.");
       return;
     }
+
+    const confirmed = window.confirm(
+      "Are you sure all the information is correct?",
+    );
+    if (!confirmed) return;
+
     setLoading(true);
     try {
       const response = await axios.post(
-        // "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
         "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
         {
           name,
@@ -37,12 +42,14 @@ const WalkInForm = () => {
           selectedDate,
         },
       );
+
       if (response.data.error) {
         toast.error(response.data.error);
         setLoading(false);
         return;
       }
-      const totalAmount = (numAdults * 7 + numChildren * 3.5) * 100; // Already correct
+
+      const totalAmount = (numAdults * 7 + numChildren * 3.5) * 100;
       navigate("/checkout", {
         state: {
           tier: "walk-in",
@@ -64,10 +71,15 @@ const WalkInForm = () => {
       toast.error("Please fill in all required fields.");
       return;
     }
+
+    const confirmed = window.confirm(
+      "Are you sure all the information is correct?",
+    );
+    if (!confirmed) return;
+
     setLoading(true);
     try {
       const response = await axios.post(
-        // "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
         "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
         {
           name,
@@ -80,11 +92,13 @@ const WalkInForm = () => {
           selectedDate,
         },
       );
+
       if (response.data.error) {
         toast.error(response.data.error);
         setLoading(false);
         return;
       }
+
       setShowMessage(
         `Please pay $${totalPrice} at the counter for ${numAdults} adult(s) and ${numChildren} child(ren).`,
       );
