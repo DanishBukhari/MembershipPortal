@@ -14,9 +14,7 @@ const AdminPortal = () => {
   useEffect(() => {
     const fetchWalkInBookings = async () => {
       try {
-        const res = await axios.get(
-          "https://membership-new-07a345e01ba7.herokuapp.com/api/admin/walk-ins",
-        );
+        const res = await axios.get("https://membership-new-07a345e01ba7.herokuapp.com/api/admin/walk-ins");
         setWalkInBookings(res.data);
       } catch (err) {
         toast.error("Failed to fetch walk-in bookings");
@@ -39,12 +37,9 @@ const AdminPortal = () => {
 
   const checkVisit = async () => {
     try {
-      await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/check-visit",
-        {
-          userId: selectedUser._id,
-        },
-      );
+      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/check-visit", {
+        userId: selectedUser._id,
+      });
       toast.success("Visit checked successfully!");
       const res = await axios.get(
         `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
@@ -61,14 +56,11 @@ const AdminPortal = () => {
     familyMemberId,
   ) => {
     try {
-      await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/confirm-cash-payment",
-        {
-          userId: selectedUser._id,
-          membershipId: isFamily ? familyMemberId : membershipId,
-          isFamily,
-        },
-      );
+      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/confirm-cash-payment", {
+        userId: selectedUser._id,
+        membershipId: isFamily ? familyMemberId : membershipId,
+        isFamily,
+      });
       toast.success("Cash payment confirmed!");
       const res = await axios.get(
         `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
@@ -81,12 +73,9 @@ const AdminPortal = () => {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/admin/delete-user",
-        {
-          data: { userId: selectedUser._id },
-        },
-      );
+      await axios.delete("https://membership-new-07a345e01ba7.herokuapp.com/api/admin/delete-user", {
+        data: { userId: selectedUser._id },
+      });
       toast.success("User deleted successfully!");
       setIsModalOpen(false);
       setSelectedUser(null);
@@ -188,12 +177,14 @@ const AdminPortal = () => {
                       <strong>Booking Date:</strong>{" "}
                       {new Date(m.createdAt).toLocaleDateString()}
                     </p>
-                    <p>
-                      <strong>Expiry Date:</strong>{" "}
-                      {new Date(m.expiry).toLocaleDateString("en-GB", {
-                        timeZone: "UTC",
-                      })}
-                    </p>
+                    {m.tier === "walk-in" && (
+                      <p>
+                        <strong>Expiry Date:</strong>{" "}
+                        {new Date(m.expiry).toLocaleDateString("en-GB", {
+                          timeZone: "UTC",
+                        })}
+                      </p>
+                    )}
                     {/* <p>
                       <strong>Visits Left:</strong>{" "}
                       {m.visitsLeft === Infinity
@@ -253,12 +244,18 @@ const AdminPortal = () => {
                           <strong>Booking Date:</strong>{" "}
                           {new Date(member.createdAt).toLocaleDateString()}
                         </p>
-                        <p>
-                          <strong>Expiry Date:</strong>{" "}
-                          {new Date(member.expiry).toLocaleDateString("en-GB", {
-                            timeZone: "UTC",
-                          })}
-                        </p>
+
+                        {member.tier === "walk-in" && (
+                          <p>
+                            <strong>Expiry Date:</strong>{" "}
+                            {new Date(member.expiry).toLocaleDateString(
+                              "en-GB",
+                              {
+                                timeZone: "UTC",
+                              },
+                            )}
+                          </p>
+                        )}
                       </>
                     )}
                     <p>
