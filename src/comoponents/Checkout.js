@@ -95,7 +95,7 @@ const CheckoutForm = () => {
           )}
           <p className="text-[#CF066C] font-bold">
             Total: ${totalPrice}{" "}
-            {tier !== "walk-in" ? "(recurring daily for testing)" : ""}
+            {/* {tier !== "walk-in" ? "(recurring daily for testing)" : ""} */}
           </p>
         </div>
         {loading ? (
