@@ -23,11 +23,6 @@ const WalkInForm = () => {
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure all the information is correct?",
-    );
-    if (!confirmed) return;
-
     setLoading(true);
     try {
       const response = await axios.post(
@@ -71,11 +66,6 @@ const WalkInForm = () => {
       toast.error("Please fill in all required fields.");
       return;
     }
-
-    const confirmed = window.confirm(
-      "Are you sure all the information is correct?",
-    );
-    if (!confirmed) return;
 
     setLoading(true);
     try {
@@ -176,7 +166,7 @@ const WalkInForm = () => {
                 type="number"
                 value={numAdults}
                 onChange={(e) =>
-                  setNumAdults(Math.max(1, parseInt(e.target.value)))
+                  setNumAdults(Math.max(1, parseInt(e.target.value || 1)))
                 }
                 min="1"
                 className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
@@ -190,7 +180,7 @@ const WalkInForm = () => {
                 type="number"
                 value={numChildren}
                 onChange={(e) =>
-                  setNumChildren(Math.max(0, parseInt(e.target.value)))
+                  setNumChildren(Math.max(0, parseInt(e.target.value || 0)))
                 }
                 min="0"
                 className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
