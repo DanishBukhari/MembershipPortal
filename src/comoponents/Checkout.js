@@ -11,8 +11,10 @@ import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "react-toastify";
 
 const stripePromise = loadStripe(
-  "pk_live_51NId1VF0l9A7Fv7kgARqU4B2QgJ5QKXqMe3V5jNJNaS0WgvZ9PFvxgauwbbVz5ymnZJE400mSB3asdIkRWrVWUUK00enIWxdtQ",
+  "pk_live_51RMH4RJqz3pkKu5cBJJH50Y8rSjriu5mqphdLqmadhdyRpzlnglSNHk5YBwLPNWNtvNpTWREI38bX3nLkt9HS1bL00ntBWq6fF",
 );
+
+// "pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy",
 
 const CheckoutForm = () => {
   const stripe = useStripe();
