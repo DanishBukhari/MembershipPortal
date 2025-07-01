@@ -11,8 +11,9 @@ const ThankYou = () => {
         <h2 className="text-3xl font-bold text-[#CF066C] mb-4">Thank You!</h2>
         {isWalkIn ? (
           <p className="text-[#CF066C] mb-4">
-            Your walk-in pass has been activated. Show this confirmation at the
-            front desk.
+            Thankyou! Your walk-pass has been activated. Please check your email
+            for confirmation (Check your promotions or spam folder if not in
+            inbox)
           </p>
         ) : (
           <>
