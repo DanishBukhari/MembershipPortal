@@ -14,9 +14,7 @@ const AdminPortal = () => {
   useEffect(() => {
     const fetchWalkInBookings = async () => {
       try {
-        const res = await axios.get(
-          "https://membership-new-07a345e01ba7.herokuapp.com/api/admin/walk-ins",
-        );
+        const res = await axios.get("https://membership-new-07a345e01ba7.herokuapp.com/api/admin/walk-ins");
         setWalkInBookings(res.data);
       } catch (err) {
         toast.error("Failed to fetch walk-in bookings");
@@ -39,12 +37,9 @@ const AdminPortal = () => {
 
   const checkVisit = async () => {
     try {
-      await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/check-visit",
-        {
-          userId: selectedUser._id,
-        },
-      );
+      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/check-visit", {
+        userId: selectedUser._id,
+      });
       toast.success("Visit checked successfully!");
       const res = await axios.get(
         `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
@@ -61,14 +56,11 @@ const AdminPortal = () => {
     familyMemberId,
   ) => {
     try {
-      await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/confirm-cash-payment",
-        {
-          userId: selectedUser._id,
-          membershipId: isFamily ? familyMemberId : membershipId,
-          isFamily,
-        },
-      );
+      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/confirm-cash-payment", {
+        userId: selectedUser._id,
+        membershipId: isFamily ? familyMemberId : membershipId,
+        isFamily,
+      });
       toast.success("Cash payment confirmed!");
       const res = await axios.get(
         `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
@@ -81,12 +73,9 @@ const AdminPortal = () => {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/admin/delete-user",
-        {
-          data: { userId: selectedUser._id },
-        },
-      );
+      await axios.delete("https://membership-new-07a345e01ba7.herokuapp.com/api/admin/delete-user", {
+        data: { userId: selectedUser._id },
+      });
       toast.success("User deleted successfully!");
       setIsModalOpen(false);
       setSelectedUser(null);
@@ -102,7 +91,7 @@ const AdminPortal = () => {
       </h2>
 
       <div className="mt-8 max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
-        <div className="space-y-4">
+        <div className="space-y-4 flex flex-col ">
           <div>
             <label className="block text-[#CF066C] font-medium">
               Enter Phone Number
@@ -119,6 +108,12 @@ const AdminPortal = () => {
             className="mt-4 w-full py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#EDEC25] hover:text-[#CF066C] transition"
           >
             Search
+          </button>
+          <button
+            onClick={() => setShowBookingsModal(true)}
+            className="px-4 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#EDEC25] hover:text-[#CF066C] transition absolut bottom-40 right-4"
+          >
+            Show All Walk-in Bookings
           </button>
         </div>
 
@@ -188,12 +183,14 @@ const AdminPortal = () => {
                       <strong>Booking Date:</strong>{" "}
                       {new Date(m.createdAt).toLocaleDateString()}
                     </p>
-                    <p>
-                      <strong>Expiry Date:</strong>{" "}
-                      {new Date(m.expiry).toLocaleDateString("en-GB", {
-                        timeZone: "UTC",
-                      })}
-                    </p>
+                    {m.tier === "walk-in" && (
+                      <p>
+                        <strong>Expiry Date:</strong>{" "}
+                        {new Date(m.expiry).toLocaleDateString("en-GB", {
+                          timeZone: "UTC",
+                        })}
+                      </p>
+                    )}
                     {/* <p>
                       <strong>Visits Left:</strong>{" "}
                       {m.visitsLeft === Infinity
@@ -253,12 +250,17 @@ const AdminPortal = () => {
                           <strong>Booking Date:</strong>{" "}
                           {new Date(member.createdAt).toLocaleDateString()}
                         </p>
-                        <p>
-                          <strong>Expiry Date:</strong>{" "}
-                          {new Date(member.expiry).toLocaleDateString("en-GB", {
-                            timeZone: "UTC",
-                          })}
-                        </p>
+                        {member.tier === "walk-in" && (
+                          <p>
+                            <strong>Expiry Date:</strong>{" "}
+                            {new Date(member.expiry).toLocaleDateString(
+                              "en-GB",
+                              {
+                                timeZone: "UTC",
+                              },
+                            )}
+                          </p>
+                        )}
                       </>
                     )}
                     <p>
@@ -322,12 +324,7 @@ const AdminPortal = () => {
         )}
       </div>
       {/* Right column - Walk-in Bookings */}
-      <button
-        onClick={() => setShowBookingsModal(true)}
-        className="px-4 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#EDEC25] hover:text-[#CF066C] transition absolute bottom-40 right-4"
-      >
-        Show All Walk-in Bookings
-      </button>
+
       {/* Walk-in Bookings Modal */}
       {showBookingsModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
