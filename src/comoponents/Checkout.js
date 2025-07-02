@@ -58,13 +58,16 @@ const CheckoutForm = () => {
     setLoading(true);
 
     try {
-      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/payment", {
-        paymentMethodId: paymentMethod.id,
-        memberships: memberships || ["walk-in"], // Default to ['walk-in'] if no memberships
-        name,
-        email,
-        phone,
-      });
+      await axios.post(
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/payment",
+        {
+          paymentMethodId: paymentMethod.id,
+          memberships: memberships || ["walk-in"], // Default to ['walk-in'] if no memberships
+          name,
+          email,
+          phone,
+        },
+      );
       navigate("/thank-you", { state: { isWalkIn: tier === "walk-in" } });
     } catch (err) {
       toast.error("Payment failed. Please try again.");

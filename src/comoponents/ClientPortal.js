@@ -89,7 +89,7 @@ const ClientPortal = () => {
     };
     if (token) {
       axios
-        .get("https://membership-new-07a345e01ba7.herokuapp.com/api/user", {
+        .get("https://membership-latest-d577860ce51a.herokuapp.com/api/user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -135,7 +135,7 @@ const ClientPortal = () => {
   const fetchSubscription = async (tokenValue) => {
     try {
       const res = await axios.get(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/subscription",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription",
         {
           headers: { Authorization: `Bearer ${tokenValue}` },
         },
@@ -149,7 +149,7 @@ const ClientPortal = () => {
   const fetchInvoices = async (tokenValue) => {
     try {
       const res = await axios.get(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/invoices",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/invoices",
         {
           headers: { Authorization: `Bearer ${tokenValue}` },
         },
@@ -166,7 +166,7 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/upload-photo",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -185,7 +185,7 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/upload-photo",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -215,7 +215,7 @@ const ClientPortal = () => {
     }
     try {
       await axios.put(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/user",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
         {
           email: user.email,
           photo,
@@ -229,7 +229,7 @@ const ClientPortal = () => {
       );
       for (const member of familyMembersToAdd) {
         await axios.post(
-          "https://membership-new-07a345e01ba7.herokuapp.com/api/family",
+          "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
           {
             name: member.name,
             relationship: member.relationship,
@@ -245,7 +245,7 @@ const ClientPortal = () => {
       setShowProfileCompletion(false);
       toast.success("Profile updated successfully!");
       const res = await axios.get(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/user",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -264,7 +264,7 @@ const ClientPortal = () => {
     }
     try {
       await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/change-password",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/change-password",
         {
           currentPassword,
           newPassword,
@@ -293,7 +293,7 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/family",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
         {
           ...familyMember,
           userId: user._id,
@@ -321,7 +321,7 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.put(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/family",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
         {
           ...editFamilyMember,
           userId: user._id,
@@ -344,7 +344,7 @@ const ClientPortal = () => {
   const changeTier = async (currentTier, newTier, memberId) => {
     try {
       const response = await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/subscription/change-tier",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription/change-tier",
         { currentTier, newTier, memberId },
         {
           headers: {
@@ -356,7 +356,7 @@ const ClientPortal = () => {
       if (response.data.success) {
         toast.success("Tier changed successfully!");
         const userRes = await axios.get(
-          "https://membership-new-07a345e01ba7.herokuapp.com/api/user",
+          "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -387,7 +387,7 @@ const ClientPortal = () => {
     ) {
       try {
         await axios.post(
-          "https://membership-new-07a345e01ba7.herokuapp.com/api/subscription/cancel-member",
+          "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription/cancel-member",
           {
             memberId: member.isPrimary ? null : member.id,
           },
@@ -397,7 +397,7 @@ const ClientPortal = () => {
         );
         toast.success(`Subscription cancelled for ${member.name}.`);
         const res = await axios.get(
-          "https://membership-new-07a345e01ba7.herokuapp.com/api/user",
+          "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
           {
             headers: { Authorization: `Bearer ${token}` },
           },

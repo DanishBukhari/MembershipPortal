@@ -26,7 +26,7 @@ const WalkInForm = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/walk-in",
         {
           name,
           email,
@@ -70,7 +70,7 @@ const WalkInForm = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://membership-new-07a345e01ba7.herokuapp.com/api/walk-in",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/walk-in",
         {
           name,
           email,

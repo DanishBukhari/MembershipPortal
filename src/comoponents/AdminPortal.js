@@ -14,7 +14,7 @@ const AdminPortal = () => {
   useEffect(() => {
     const fetchWalkInBookings = async () => {
       try {
-        const res = await axios.get("https://membership-new-07a345e01ba7.herokuapp.com/api/admin/walk-ins");
+        const res = await axios.get("https://membership-latest-d577860ce51a.herokuapp.com/api/admin/walk-ins");
         setWalkInBookings(res.data);
       } catch (err) {
         toast.error("Failed to fetch walk-in bookings");
@@ -26,7 +26,7 @@ const AdminPortal = () => {
   const handleSearch = async () => {
     try {
       const res = await axios.get(
-        `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
       setIsModalOpen(true);
@@ -37,12 +37,12 @@ const AdminPortal = () => {
 
   const checkVisit = async () => {
     try {
-      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/check-visit", {
+      await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/check-visit", {
         userId: selectedUser._id,
       });
       toast.success("Visit checked successfully!");
       const res = await axios.get(
-        `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
     } catch (err) {
@@ -56,14 +56,14 @@ const AdminPortal = () => {
     familyMemberId,
   ) => {
     try {
-      await axios.post("https://membership-new-07a345e01ba7.herokuapp.com/api/confirm-cash-payment", {
+      await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/confirm-cash-payment", {
         userId: selectedUser._id,
         membershipId: isFamily ? familyMemberId : membershipId,
         isFamily,
       });
       toast.success("Cash payment confirmed!");
       const res = await axios.get(
-        `https://membership-new-07a345e01ba7.herokuapp.com/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
     } catch (err) {
@@ -73,7 +73,7 @@ const AdminPortal = () => {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete("https://membership-new-07a345e01ba7.herokuapp.com/api/admin/delete-user", {
+      await axios.delete("https://membership-latest-d577860ce51a.herokuapp.com/api/admin/delete-user", {
         data: { userId: selectedUser._id },
       });
       toast.success("User deleted successfully!");
@@ -111,7 +111,7 @@ const AdminPortal = () => {
           </button>
           <button
             onClick={() => setShowBookingsModal(true)}
-            className="px-4 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#EDEC25] hover:text-[#CF066C] transition absolut bottom-40 right-4"
+            className="mt-4 w-full py-2 bg-[#EDEC25] text-dark rounded-full hover:bg-[#EDEC25] hover:text-[#CF066C] transition"
           >
             Show All Walk-in Bookings
           </button>
@@ -191,14 +191,14 @@ const AdminPortal = () => {
                         })}
                       </p>
                     )}
-                    {/* <p>
+                    <p>
                       <strong>Visits Left:</strong>{" "}
-                      {m.visitsLeft === Infinity
+                      {m.visitsLeft === Number.MAX_SAFE_INTEGER
                         ? "Unlimited"
                         : m.visitsLeft === 0
                         ? "Maxed Out"
                         : m.visitsLeft}
-                    </p> */}
+                    </p>
                     <p
                       className={`${
                         m.paymentStatus === "active"
@@ -207,7 +207,7 @@ const AdminPortal = () => {
                       }`}
                     >
                       <strong>Payment:</strong>{" "}
-                      {m.paymentStatus === "active" ? "Done" : "Pending"}
+                      {m.paymentStatus === "active" ? "Done" : m.paymentStatus}
                     </p>
 
                     {m.tier === "walk-in" && m.paymentStatus === "pending" && (
