@@ -12,9 +12,8 @@ import { toast } from "react-toastify";
 
 const stripePromise = loadStripe(
   "pk_live_51RMH4RJqz3pkKu5cBJJH50Y8rSjriu5mqphdLqmadhdyRpzlnglSNHk5YBwLPNWNtvNpTWREI38bX3nLkt9HS1bL00ntBWq6fF",
+  // "pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy",
 );
-
-// "pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy",
 
 const CheckoutForm = () => {
   const stripe = useStripe();
