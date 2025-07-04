@@ -25,9 +25,7 @@ const AdminPortal = () => {
   useEffect(() => {
     const fetchWalkInBookings = async () => {
       try {
-        const res = await axios.get(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/admin/walk-ins",
-        );
+        const res = await axios.get("http://localhost:5000/api/admin/walk-ins");
         setWalkInBookings(res.data);
       } catch (err) {
         toast.error("Failed to fetch walk-in bookings");
@@ -65,7 +63,7 @@ const AdminPortal = () => {
   const handleSearch = async () => {
     try {
       const res = await axios.get(
-        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
+        `http://localhost:5000/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
       setIsModalOpen(true);
@@ -79,20 +77,17 @@ const AdminPortal = () => {
       setIsCheckingIn(true);
 
       // Send only selected bookings to backend
-      await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/check-visit",
-        {
-          userId: selectedUser._id,
-          membershipIds: selectedBookings.primary,
-          familyIds: selectedBookings.family,
-        },
-      );
+      await axios.post("http://localhost:5000/api/check-visit", {
+        userId: selectedUser._id,
+        membershipIds: selectedBookings.primary,
+        familyIds: selectedBookings.family,
+      });
 
       toast.success("Visit processed successfully!");
 
       // Refresh user data
       const res = await axios.get(
-        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
+        `http://localhost:5000/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
     } catch (err) {
@@ -108,19 +103,16 @@ const AdminPortal = () => {
     familyMemberId,
   ) => {
     try {
-      await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/confirm-cash-payment",
-        {
-          userId: selectedUser._id,
-          membershipId: isFamily ? familyMemberId : membershipId,
-          isFamily,
-        },
-      );
+      await axios.post("http://localhost:5000/api/confirm-cash-payment", {
+        userId: selectedUser._id,
+        membershipId: isFamily ? familyMemberId : membershipId,
+        isFamily,
+      });
       toast.success("Cash payment confirmed!");
 
       // Refresh user data
       const res = await axios.get(
-        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
+        `http://localhost:5000/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
     } catch (err) {
@@ -130,12 +122,9 @@ const AdminPortal = () => {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/admin/delete-user",
-        {
-          data: { userId: selectedUser._id },
-        },
-      );
+      await axios.delete("http://localhost:5000/api/admin/delete-user", {
+        data: { userId: selectedUser._id },
+      });
       toast.success("User deleted successfully!");
       setIsModalOpen(false);
       setSelectedUser(null);

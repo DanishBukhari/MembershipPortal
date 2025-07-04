@@ -13,13 +13,10 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/login",
-        {
-          email,
-          password,
-        },
-      );
+      const res = await axios.post("http://localhost:5000/api/login", {
+        email,
+        password,
+      });
       localStorage.setItem("token", res.data.token);
       toast.success("Logged in successfully!");
       navigate("/portal");
@@ -34,12 +31,9 @@ const Login = () => {
 
   const handleForgotPassword = async () => {
     try {
-      await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/forgot-password",
-        {
-          email: forgotEmail,
-        },
-      );
+      await axios.post("http://localhost:5000/api/forgot-password", {
+        email: forgotEmail,
+      });
       toast.success("Password reset email sent. Check your inbox.");
       setShowForgotPassword(false);
       setForgotEmail("");

@@ -89,7 +89,7 @@ const ClientPortal = () => {
     };
     if (token) {
       axios
-        .get("https://membership-latest-d577860ce51a.herokuapp.com/api/user", {
+        .get("http://localhost:5000/api/user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -134,12 +134,9 @@ const ClientPortal = () => {
 
   const fetchSubscription = async (tokenValue) => {
     try {
-      const res = await axios.get(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription",
-        {
-          headers: { Authorization: `Bearer ${tokenValue}` },
-        },
-      );
+      const res = await axios.get("http://localhost:5000/api/subscription", {
+        headers: { Authorization: `Bearer ${tokenValue}` },
+      });
       setSubscription(res.data);
     } catch (err) {
       console.error("Error fetching subscription:", err);
@@ -148,12 +145,9 @@ const ClientPortal = () => {
 
   const fetchInvoices = async (tokenValue) => {
     try {
-      const res = await axios.get(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/invoices",
-        {
-          headers: { Authorization: `Bearer ${tokenValue}` },
-        },
-      );
+      const res = await axios.get("http://localhost:5000/api/invoices", {
+        headers: { Authorization: `Bearer ${tokenValue}` },
+      });
       setInvoices(res.data.data);
     } catch (err) {
       console.error("Error fetching invoices:", err);
@@ -166,7 +160,7 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/upload-photo",
+        "http://localhost:5000/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -185,7 +179,7 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/upload-photo",
+        "http://localhost:5000/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -215,7 +209,7 @@ const ClientPortal = () => {
     }
     try {
       await axios.put(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
+        "http://localhost:5000/api/user",
         {
           email: user.email,
           photo,
@@ -229,7 +223,7 @@ const ClientPortal = () => {
       );
       for (const member of familyMembersToAdd) {
         await axios.post(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
+          "http://localhost:5000/api/family",
           {
             name: member.name,
             relationship: member.relationship,
@@ -244,12 +238,9 @@ const ClientPortal = () => {
       }
       setShowProfileCompletion(false);
       toast.success("Profile updated successfully!");
-      const res = await axios.get(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const res = await axios.get("http://localhost:5000/api/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setUser(res.data);
       setFamily(res.data.family);
     } catch (err) {
@@ -264,7 +255,7 @@ const ClientPortal = () => {
     }
     try {
       await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/change-password",
+        "http://localhost:5000/api/change-password",
         {
           currentPassword,
           newPassword,
@@ -293,7 +284,7 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
+        "http://localhost:5000/api/family",
         {
           ...familyMember,
           userId: user._id,
@@ -321,7 +312,7 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.put(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
+        "http://localhost:5000/api/family",
         {
           ...editFamilyMember,
           userId: user._id,
@@ -344,7 +335,7 @@ const ClientPortal = () => {
   const changeTier = async (currentTier, newTier, memberId) => {
     try {
       const response = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription/change-tier",
+        "http://localhost:5000/api/subscription/change-tier",
         { currentTier, newTier, memberId },
         {
           headers: {
@@ -355,12 +346,9 @@ const ClientPortal = () => {
       );
       if (response.data.success) {
         toast.success("Tier changed successfully!");
-        const userRes = await axios.get(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const userRes = await axios.get("http://localhost:5000/api/user", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setUser(userRes.data);
         setFamily(userRes.data.family);
         fetchSubscription(token);
@@ -387,7 +375,7 @@ const ClientPortal = () => {
     ) {
       try {
         await axios.post(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription/cancel-member",
+          "http://localhost:5000/api/subscription/cancel-member",
           {
             memberId: member.isPrimary ? null : member.id,
           },
@@ -396,12 +384,9 @@ const ClientPortal = () => {
           },
         );
         toast.success(`Subscription cancelled for ${member.name}.`);
-        const res = await axios.get(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const res = await axios.get("http://localhost:5000/api/user", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setUser(res.data);
         setFamily(res.data.family);
         fetchSubscription(token);
