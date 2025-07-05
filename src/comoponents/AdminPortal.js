@@ -21,11 +21,13 @@ const AdminPortal = () => {
     family: [],
   });
 
+  console.log(activeSessions);
+
   // Fetch all walk-in bookings
   useEffect(() => {
     const fetchWalkInBookings = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/admin/walk-ins");
+        const res = await axios.get("https://membership-latest-d577860ce51a.herokuapp.com/api/admin/walk-ins");
         setWalkInBookings(res.data);
       } catch (err) {
         toast.error("Failed to fetch walk-in bookings");
@@ -63,7 +65,7 @@ const AdminPortal = () => {
   const handleSearch = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
       setIsModalOpen(true);
@@ -77,7 +79,7 @@ const AdminPortal = () => {
       setIsCheckingIn(true);
 
       // Send only selected bookings to backend
-      await axios.post("http://localhost:5000/api/check-visit", {
+      await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/check-visit", {
         userId: selectedUser._id,
         membershipIds: selectedBookings.primary,
         familyIds: selectedBookings.family,
@@ -87,7 +89,7 @@ const AdminPortal = () => {
 
       // Refresh user data
       const res = await axios.get(
-        `http://localhost:5000/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
     } catch (err) {
@@ -103,7 +105,7 @@ const AdminPortal = () => {
     familyMemberId,
   ) => {
     try {
-      await axios.post("http://localhost:5000/api/confirm-cash-payment", {
+      await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/confirm-cash-payment", {
         userId: selectedUser._id,
         membershipId: isFamily ? familyMemberId : membershipId,
         isFamily,
@@ -112,7 +114,7 @@ const AdminPortal = () => {
 
       // Refresh user data
       const res = await axios.get(
-        `http://localhost:5000/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
     } catch (err) {
@@ -122,7 +124,7 @@ const AdminPortal = () => {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete("http://localhost:5000/api/admin/delete-user", {
+      await axios.delete("https://membership-latest-d577860ce51a.herokuapp.com/api/admin/delete-user", {
         data: { userId: selectedUser._id },
       });
       toast.success("User deleted successfully!");
@@ -324,7 +326,7 @@ const AdminPortal = () => {
                         />
                         <div>
                           <p className="font-semibold">{m.tier}</p>
-                          {m.tier === "walk-in" && (
+                          {m.tier === "walk-in" ? (
                             <div className="mt-1">
                               <p className="text-sm">
                                 <span className="text-gray-600">Adults:</span>{" "}
@@ -341,6 +343,34 @@ const AdminPortal = () => {
                                   m?.numChildren * 3.5
                                 ).toFixed(2)}
                               </p>
+                              <p className="text-sm mt-2">
+                                <span className="text-gray-600">
+                                  Visits Left:
+                                </span>{" "}
+                                {m.visitsLeft === Number.MAX_SAFE_INTEGER
+                                  ? "Unlimited"
+                                  : m.visitsLeft <= 0
+                                  ? "Maxed Out"
+                                  : m.visitsLeft}
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="mt-1">
+                              {/* <p className="text-sm">
+                                <span className="text-gray-600">Adults:</span>{" "}
+                                {m?.numAdults || 0}
+                              </p>
+                              <p className="text-sm">
+                                <span className="text-gray-600">Children:</span>{" "}
+                                {m?.numChildren || 0}
+                              </p> */}
+                              {/* <p className="text-sm">
+                                <span className="text-gray-600">Total:</span> $
+                                {(
+                                  m?.numAdults * 7 +
+                                  m?.numChildren * 3.5
+                                ).toFixed(2)}
+                              </p> */}
                               <p className="text-sm mt-2">
                                 <span className="text-gray-600">
                                   Visits Left:
@@ -395,14 +425,14 @@ const AdminPortal = () => {
                             <p className="font-medium">
                               {dayjs.utc(m.sessionStart).format("h:mm A")}
                             </p>
-                            <p className="text-xs mt-1">
+                            {/* <p className="text-xs mt-1">
                               <span className="text-gray-600">
                                 Time remaining:
                               </span>{" "}
                               <span className="font-medium">
                                 {calculateTimeRemaining(m.sessionStart)}
                               </span>
-                            </p>
+                            </p> */}
                           </div>
                         )}
 

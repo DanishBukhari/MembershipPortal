@@ -89,7 +89,7 @@ const ClientPortal = () => {
     };
     if (token) {
       axios
-        .get("http://localhost:5000/api/user", {
+        .get("https://membership-latest-d577860ce51a.herokuapp.com/api/user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -134,9 +134,12 @@ const ClientPortal = () => {
 
   const fetchSubscription = async (tokenValue) => {
     try {
-      const res = await axios.get("http://localhost:5000/api/subscription", {
-        headers: { Authorization: `Bearer ${tokenValue}` },
-      });
+      const res = await axios.get(
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription",
+        {
+          headers: { Authorization: `Bearer ${tokenValue}` },
+        },
+      );
       setSubscription(res.data);
     } catch (err) {
       console.error("Error fetching subscription:", err);
@@ -145,9 +148,12 @@ const ClientPortal = () => {
 
   const fetchInvoices = async (tokenValue) => {
     try {
-      const res = await axios.get("http://localhost:5000/api/invoices", {
-        headers: { Authorization: `Bearer ${tokenValue}` },
-      });
+      const res = await axios.get(
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/invoices",
+        {
+          headers: { Authorization: `Bearer ${tokenValue}` },
+        },
+      );
       setInvoices(res.data.data);
     } catch (err) {
       console.error("Error fetching invoices:", err);
@@ -160,7 +166,7 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/upload-photo",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -179,7 +185,7 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/upload-photo",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -209,7 +215,7 @@ const ClientPortal = () => {
     }
     try {
       await axios.put(
-        "http://localhost:5000/api/user",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
         {
           email: user.email,
           photo,
@@ -223,7 +229,7 @@ const ClientPortal = () => {
       );
       for (const member of familyMembersToAdd) {
         await axios.post(
-          "http://localhost:5000/api/family",
+          "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
           {
             name: member.name,
             relationship: member.relationship,
@@ -238,9 +244,12 @@ const ClientPortal = () => {
       }
       setShowProfileCompletion(false);
       toast.success("Profile updated successfully!");
-      const res = await axios.get("http://localhost:5000/api/user", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setUser(res.data);
       setFamily(res.data.family);
     } catch (err) {
@@ -255,7 +264,7 @@ const ClientPortal = () => {
     }
     try {
       await axios.post(
-        "http://localhost:5000/api/change-password",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/change-password",
         {
           currentPassword,
           newPassword,
@@ -284,7 +293,7 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/family",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
         {
           ...familyMember,
           userId: user._id,
@@ -312,7 +321,7 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/family",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
         {
           ...editFamilyMember,
           userId: user._id,
@@ -335,7 +344,7 @@ const ClientPortal = () => {
   const changeTier = async (currentTier, newTier, memberId) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/subscription/change-tier",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription/change-tier",
         { currentTier, newTier, memberId },
         {
           headers: {
@@ -346,9 +355,12 @@ const ClientPortal = () => {
       );
       if (response.data.success) {
         toast.success("Tier changed successfully!");
-        const userRes = await axios.get("http://localhost:5000/api/user", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const userRes = await axios.get(
+          "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         setUser(userRes.data);
         setFamily(userRes.data.family);
         fetchSubscription(token);
@@ -375,7 +387,7 @@ const ClientPortal = () => {
     ) {
       try {
         await axios.post(
-          "http://localhost:5000/api/subscription/cancel-member",
+          "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription/cancel-member",
           {
             memberId: member.isPrimary ? null : member.id,
           },
@@ -384,9 +396,12 @@ const ClientPortal = () => {
           },
         );
         toast.success(`Subscription cancelled for ${member.name}.`);
-        const res = await axios.get("http://localhost:5000/api/user", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         setUser(res.data);
         setFamily(res.data.family);
         fetchSubscription(token);
@@ -643,27 +658,29 @@ const ClientPortal = () => {
                   className="w-24 h-24 rounded-md mt-2"
                 />
               )}
-              {user.memberships.map((m, idx) => (
-                <div key={idx} className="mt-2">
-                  <p>
-                    <strong>Tier:</strong> {m.tier.toUpperCase()}
-                  </p>
-                  <p>
-                    <strong>Visits Left:</strong>{" "}
-                    {m.visitsLeft === Number.MAX_SAFE_INTEGER
-                      ? "Unlimited"
-                      : m.visitsLeft === 0
-                      ? "Maxed Out"
-                      : m.visitsLeft}
-                  </p>
-                  {m.tier === "walk-in" && m.expiry && (
+              {user.memberships
+                .filter((m) => m.paymentStatus === "active")
+                .map((m, idx) => (
+                  <div key={idx} className="mt-2">
                     <p>
-                      <strong>Expiry:</strong>{" "}
-                      {new Date(m.expiry).toLocaleDateString()}
+                      <strong>Tier:</strong> {m.tier.toUpperCase()}
                     </p>
-                  )}
-                </div>
-              ))}
+                    <p>
+                      <strong>Visits Left:</strong>{" "}
+                      {m.visitsLeft === Number.MAX_SAFE_INTEGER
+                        ? "Unlimited"
+                        : m.visitsLeft === 0
+                        ? "Maxed Out"
+                        : m.visitsLeft}
+                    </p>
+                    {m.tier === "walk-in" && m.expiry && (
+                      <p>
+                        <strong>Expiry:</strong>{" "}
+                        {new Date(m.expiry).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                ))}
             </div>
             <h3 className="text-xl font-bold text-[#CF066C] mb-2">
               Family Members

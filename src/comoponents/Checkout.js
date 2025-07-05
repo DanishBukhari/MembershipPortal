@@ -11,8 +11,8 @@ import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "react-toastify";
 
 const stripePromise = loadStripe(
-  // "pk_live_51RMH4RJqz3pkKu5cBJJH50Y8rSjriu5mqphdLqmadhdyRpzlnglSNHk5YBwLPNWNtvNpTWREI38bX3nLkt9HS1bL00ntBWq6fF",
-  "pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy",
+  "pk_live_51RMH4RJqz3pkKu5cBJJH50Y8rSjriu5mqphdLqmadhdyRpzlnglSNHk5YBwLPNWNtvNpTWREI38bX3nLkt9HS1bL00ntBWq6fF",
+  // "pk_test_51KbKQBBQRG3WrNBRg6dlmV8aHWW6klNx70cds5tQZPDYCjVwPrMf1K8xpw6l1DnmxNIximiyM1JjHNyN2koFDy9R00dpSL0aHy",
 );
 
 const CheckoutForm = () => {
@@ -57,13 +57,16 @@ const CheckoutForm = () => {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:5000/api/payment", {
-        paymentMethodId: paymentMethod.id,
-        memberships: memberships || ["walk-in"], // Default to ['walk-in'] if no memberships
-        name,
-        email,
-        phone,
-      });
+      await axios.post(
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/payment",
+        {
+          paymentMethodId: paymentMethod.id,
+          memberships: memberships || ["walk-in"], // Default to ['walk-in'] if no memberships
+          name,
+          email,
+          phone,
+        },
+      );
       navigate("/thank-you", { state: { isWalkIn: tier === "walk-in" } });
     } catch (err) {
       toast.error("Payment failed. Please try again.");

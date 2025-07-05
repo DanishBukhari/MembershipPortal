@@ -25,15 +25,18 @@ const WalkInForm = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5000/api/walk-in", {
-        name,
-        email,
-        phone,
-        tier: "walk-in",
-        numAdults,
-        numChildren,
-        selectedDate,
-      });
+      const response = await axios.post(
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/walk-in",
+        {
+          name,
+          email,
+          phone,
+          tier: "walk-in",
+          numAdults,
+          numChildren,
+          selectedDate,
+        },
+      );
 
       if (response.data.error) {
         toast.error(response.data.error);
@@ -66,16 +69,19 @@ const WalkInForm = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5000/api/walk-in", {
-        name,
-        email,
-        phone,
-        tier: "walk-in",
-        paymentMethod: "cash",
-        numAdults,
-        numChildren,
-        selectedDate,
-      });
+      const response = await axios.post(
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/walk-in",
+        {
+          name,
+          email,
+          phone,
+          tier: "walk-in",
+          paymentMethod: "cash",
+          numAdults,
+          numChildren,
+          selectedDate,
+        },
+      );
 
       if (response.data.error) {
         toast.error(response.data.error);

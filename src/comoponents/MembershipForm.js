@@ -38,12 +38,15 @@ const MembershipForm = () => {
     setLoading(true);
     try {
       const memberships = [primaryTier, ...familyMemberships];
-      await axios.post("http://localhost:5000/api/users", {
-        name,
-        email,
-        phone,
-        memberships,
-      });
+      await axios.post(
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/users",
+        {
+          name,
+          email,
+          phone,
+          memberships,
+        },
+      );
       navigate("/checkout", { state: { memberships, name, email, phone } });
     } catch (err) {
       toast.error(
