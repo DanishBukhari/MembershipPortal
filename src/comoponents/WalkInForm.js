@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { QRCodeCanvas } from "qrcode.react";
+// import { QRCodeCanvas } from "qrcode.react";
 import { toast } from "react-toastify";
 
 const WalkInForm = () => {
