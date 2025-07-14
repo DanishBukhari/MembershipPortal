@@ -151,6 +151,10 @@ const MembershipForm = () => {
                 Add Family Membership
               </button>
             </div>
+            <div className="flex items-center">
+              <input type="checkbox" checked={termsChecked} onChange={(e) => setTermsChecked(e.target.checked)} className="mr-2" />
+              <label className="text-sm text-gray-600">I agree to the <a href="https://docs.google.com/document/d/1QwyB1eZ9yHKCul-bnP5G9JYj8GNAC5-v8h7HnVyqcyw/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Terms and Conditions</a>.</label>
+            </div>
             <button
               style={{ border: "1px solid #CF066C" }}
               onClick={handleSubmit}
