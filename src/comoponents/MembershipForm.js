@@ -8,6 +8,7 @@ const MembershipForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [termsChecked, setTermsChecked] = useState("");
   const [primaryTier, setPrimaryTier] = useState(tier || "legacy-maker");
   const [familyMemberships, setFamilyMemberships] = useState([]);
   const [loading, setLoading] = useState(false);

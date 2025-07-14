@@ -65,7 +65,7 @@ const Membership = () => {
             </ul>
             <li>Family Entry: Additional children: $3.50 each</li>
           </ul>
-          <Link style={{border: "1px solid #CF066C"}} to="/walk-in" className="mt-4 inline-block px-6 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition">Get Walk-In QR Code</Link>
+          <Link style={{border: "1px solid #CF066C"}} to="/walk-in" className="mt-4 inline-block px-6 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition">Get Day-Pass</Link>
         </div>
       </div>
     </section>
