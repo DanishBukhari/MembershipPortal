@@ -308,11 +308,10 @@ const AdminPortal = () => {
                 .map((m, idx) => (
                   <div
                     key={idx}
-                    className={`mt-4 border rounded-lg p-4 ${
-                      isBookingSelected("primary", m._id)
+                    className={`mt-4 border rounded-lg p-4 ${isBookingSelected("primary", m._id)
                         ? "border-[#CF066C] bg-rose-50"
                         : "border-gray-200"
-                    }`}
+                      }`}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex items-start">
@@ -329,18 +328,24 @@ const AdminPortal = () => {
                           {m.tier === "walk-in" ? (
                             <div className="mt-1">
                               <p className="text-sm">
-                                <span className="text-gray-600">Adults:</span>{" "}
-                                {m?.numAdults || 0}
+                                <span className="text-gray-600">Hours:</span> {m?.numHours || 1}
                               </p>
                               <p className="text-sm">
-                                <span className="text-gray-600">Children:</span>{" "}
-                                {m?.numChildren || 0}
+                                <span className="text-gray-600">Participants:</span> {m?.numParticipants || 1}
+                              </p>
+                              <p className="text-sm">
+                                <span className="text-gray-600">Non-Participating Adults:</span> {m?.numNonParticipatingAdults || 0}
+                              </p>
+                              <p className="text-sm">
+                                <span className="text-gray-600">Hours Left:</span> {m.hoursLeft ?? m.numHours}
                               </p>
                               <p className="text-sm">
                                 <span className="text-gray-600">Total:</span> $
                                 {(
-                                  m?.numAdults * 7 +
-                                  m?.numChildren * 3.5
+                                  m.numHours * 7 +
+                                  m.numHours * 3.5 * (m.numParticipants - 1) +
+                                  2.5 * (m.numNonParticipatingAdults >= 1 ? 1 : 0) +
+                                  1 * Math.max(0, m.numNonParticipatingAdults - 1)
                                 ).toFixed(2)}
                               </p>
                               <p className="text-sm mt-2">
@@ -350,8 +355,8 @@ const AdminPortal = () => {
                                 {m.visitsLeft === Number.MAX_SAFE_INTEGER
                                   ? "Unlimited"
                                   : m.visitsLeft <= 0
-                                  ? "Maxed Out"
-                                  : m.visitsLeft}
+                                    ? "Maxed Out"
+                                    : m.visitsLeft}
                               </p>
                             </div>
                           ) : (
@@ -378,8 +383,8 @@ const AdminPortal = () => {
                                 {m.visitsLeft === Number.MAX_SAFE_INTEGER
                                   ? "Unlimited"
                                   : m.visitsLeft <= 0
-                                  ? "Maxed Out"
-                                  : m.visitsLeft}
+                                    ? "Maxed Out"
+                                    : m.visitsLeft}
                               </p>
                             </div>
                           )}
@@ -457,11 +462,10 @@ const AdminPortal = () => {
                 selectedUser.family.map((member, idx) => (
                   <div
                     key={idx}
-                    className={`mt-4 border rounded-lg p-4 ${
-                      isBookingSelected("family", member._id)
+                    className={`mt-4 border rounded-lg p-4 ${isBookingSelected("family", member._id)
                         ? "border-[#CF066C] bg-rose-50"
                         : "border-gray-200"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start">
                       <input
@@ -570,18 +574,16 @@ const AdminPortal = () => {
                 <button
                   onClick={checkVisit}
                   disabled={isCheckingIn || !hasSelectedBookings()}
-                  className={`px-4 py-2 rounded-md transition ${
-                    isCheckingIn || !hasSelectedBookings()
+                  className={`px-4 py-2 rounded-md transition ${isCheckingIn || !hasSelectedBookings()
                       ? "bg-gray-400 text-gray-200 cursor-not-allowed"
                       : "bg-[#CF066C] text-white hover:bg-[#EDEC25] hover:text-[#CF066C]"
-                  }`}
+                    }`}
                 >
                   {isCheckingIn
                     ? "Processing..."
-                    : `Check Selected (${
-                        selectedBookings.primary.length +
-                        selectedBookings.family.length
-                      })`}
+                    : `Check Selected (${selectedBookings.primary.length +
+                    selectedBookings.family.length
+                    })`}
                 </button>
 
                 {selectedUser.paymentStatus === "expired" && (
@@ -737,11 +739,10 @@ const AdminPortal = () => {
                             </div>
                             <div className="mt-1">
                               <span
-                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                  booking.membership.paymentStatus === "active"
+                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${booking.membership.paymentStatus === "active"
                                     ? "bg-green-100 text-green-800"
                                     : "bg-red-100 text-red-800"
-                                }`}
+                                  }`}
                               >
                                 {booking.membership.paymentStatus}
                               </span>

@@ -54,7 +54,7 @@ const Membership = () => {
         </div>
 
         <div className="walk-in-rates mt-12 p-6 bg-white rounded-lg shadow-lg">
-          <h3 className="text-2xl font-bold uppercase text-[#CF066C] text-center">WALK-IN RATES</h3>
+          <h3 className="text-2xl font-bold uppercase text-[#CF066C] text-center">Day Pass</h3>
           <ul className="list-disc pl-6 text-[#CF066C] mt-4 text-left max-w-md mx-auto">
             <li>Entry: $7 per hour</li>
             <li>Students & Pensioners: $3 per hour</li>
