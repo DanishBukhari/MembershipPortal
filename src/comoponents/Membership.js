@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 const Membership = () => {
   return (
     <section className="bg-[#FFFFFF] py-12 min-h-screen">
+      <Link style={{border: "1px solid #CF066C"}} to="/login" className="mt-4 px-6 py-2 bg-[#CF066C] text-white rounded-full hover:bg-[#fff] hover:text-[#CF066C] transition absolute top-5 right-5">Login</Link>
       <div className="container mx-auto text-center">
-        <h1 className="text-4xl font-bold uppercase text-[#CF066C]">LEGACY HUB PRICE LIST</h1>
+        <h1 className="text-4xl font-bold uppercase text-[#CF066C]">Join the Legacy Hub</h1>
         <h2 className="text-xl font-bold uppercase text-[#CF066C] mt-2">MEMBERSHIP OPTIONS</h2>
         <div className="mt-4">
           <span className="text-2xl italic font-bold text-[#EDEC25]">YOU ME AND THE COMMUNITY</span>
