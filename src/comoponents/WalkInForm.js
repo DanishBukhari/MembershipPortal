@@ -172,7 +172,7 @@ const WalkInForm = () => {
 
             <div className="flex align-end justify-between">
               <div>
-                <label className="block text-[#CF066C] font-medium">NO of Participants</label>
+                <label className="block text-[#CF066C] font-medium">No. of Participants</label>
                 <input type="number" value={numParticipants} onChange={(e) => setNumParticipants(Math.max(1, parseInt(e.target.value || 1)))} min="1" className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C] mr-1" />
               </div>
               <div>

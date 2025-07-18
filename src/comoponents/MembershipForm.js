@@ -149,7 +149,7 @@ const MembershipForm = () => {
                 onClick={addFamilyMembership}
                 className="mt-2 p-2 bg-[#CF066C] text-white rounded-md hover:bg-[#fff] hover:text-[#CF066C] transition"
               >
-                Add Family Membership at 50% OFF
+                Add Family Members at 50% OFF
               </button>
             </div>
             <div className="flex items-center">
