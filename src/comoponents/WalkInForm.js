@@ -19,19 +19,54 @@ const WalkInForm = () => {
   const navigate = useNavigate();
 
   const totalPrice = (
-    numHours * 7 + 
-    numHours * 3.5 * (numParticipants - 1) + 
-    2.5 * (numNonParticipatingAdults >= 1 ? 1 : 0) + 
+    numHours * 7 +
+    numHours * 3.5 * (numParticipants - 1) +
+    2.5 * (numNonParticipatingAdults >= 1 ? 1 : 0) +
     1 * Math.max(0, numNonParticipatingAdults - 1)
   ).toFixed(2);
 
-  const isFormValid = name && email && phone && selectedDate && acknowledgementChecked && termsChecked && numParticipants >= 1;
+  const isFormValid = () => {
+    if (!name.trim()) {
+      toast.error("Please enter your name.");
+      return false;
+    }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email.");
+      return false;
+    }
+    if (!phone.trim() || phone.length < 10) {
+      toast.error("Please enter a valid phone number (at least 10 digits).");
+      return false;
+    }
+    if (!selectedDate) {
+      toast.error("Please select a date.");
+      return false;
+    }
+    if (numHours < 1) {
+      toast.error("Number of hours must be at least 1.");
+      return false;
+    }
+    if (numParticipants < 1) {
+      toast.error("Number of participants must be at least 1.");
+      return false;
+    }
+    if (numNonParticipatingAdults < 0) {
+      toast.error("Number of non-participating adults cannot be negative.");
+      return false;
+    }
+    if (!acknowledgementChecked) {
+      toast.error("Please agree to the terms and conditions before proceeding.");
+      return false;
+    }
+    if (!termsChecked) {
+      toast.error("Please agree to the terms and conditions before proceeding.");
+      return false;
+    }
+    return true;
+  };
 
   const handlePayNow = async () => {
-    if (!isFormValid) {
-      toast.error("Please fill all fields and agree to terms.");
-      return;
-    }
+    if (!isFormValid() || loading) return;
     setLoading(true);
     try {
       const response = await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/walk-in", {
@@ -52,10 +87,7 @@ const WalkInForm = () => {
   };
 
   const handlePayAtCounter = async () => {
-    if (!isFormValid) {
-      toast.error("Please fill all fields and agree to terms.");
-      return;
-    }
+    if (!isFormValid() || loading) return;
     setLoading(true);
     try {
       const response = await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/walk-in", {
@@ -119,47 +151,46 @@ const WalkInForm = () => {
                 required
               />
             </div>
-            <div className="flex align-end justify-around">
-            <div>
-              <label className="block text-[#CF066C] font-medium">
-                Select Date
-              </label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]"
-                required
-              />
+            <div className="flex align-end justify-between">
+              <div>
+                <label className="block text-[#CF066C] font-medium">
+                  Select Date
+                </label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                  className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C] mr-1"
+                />
+              </div>
+              <div>
+                <label className="block text-[#CF066C] font-medium">Number of Hours</label>
+                <input type="number" value={numHours} onChange={(e) => setNumHours(Math.max(1, parseInt(e.target.value || 1)))} min="1" className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C] ml-1" />
+              </div>
             </div>
-            <div>
-              <label className="block text-[#CF066C] font-medium">Number of Hours</label>
-              <input type="number" value={numHours} onChange={(e) => setNumHours(Math.max(1, parseInt(e.target.value || 1)))} min="1" className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]" />
-            </div>
-             </div>
-             <div className="flex align-end justify-between">
 
-            <div>
-              <label className="block text-[#CF066C] font-medium">Number of Participants</label>
-              <input  type="number" value={numParticipants} onChange={(e) => setNumParticipants(Math.max(1, parseInt(e.target.value || 1)))} min="1" className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C]" />
+            <div className="flex align-end justify-between">
+              <div>
+                <label className="block text-[#CF066C] font-medium">NO of Participants</label>
+                <input type="number" value={numParticipants} onChange={(e) => setNumParticipants(Math.max(1, parseInt(e.target.value || 1)))} min="1" className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C] mr-1" />
+              </div>
+              <div>
+                <label className="block text-[#CF066C] font-medium">Non-Participating Adults</label>
+                <input type="number" value={numNonParticipatingAdults} onChange={(e) => setNumNonParticipatingAdults(Math.max(0, parseInt(e.target.value || 0)))} min="0" className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C] ml-1" />
+              </div>
             </div>
-            <div>
-              <label className="block text-[#CF066C] font-medium">Number of Non-Participating Adults</label>
-              <input type="number" value={numNonParticipatingAdults} onChange={(e) => setNumNonParticipatingAdults(Math.max(0, parseInt(e.target.value || 0)))} min="0" className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#CF066C] ml-1" />
-            </div>
-             </div>
             <div className="">
-              <input type="checkbox" checked={acknowledgementChecked} onChange={(e) => setAcknowledgementChecked(e.target.checked)} className="mr-2" />
+              <input type="checkbox" checked={acknowledgementChecked} onChange={(e) => setAcknowledgementChecked(e.target.checked)} className="mr-2" required />
               <label className="text-sm text-gray-600">As non-participating adults, we acknowledge that we cannot use the arcade and gaming facilities. We are here just for supervision.</label>
             </div>
             <div className="flex items-center">
-              <input type="checkbox" checked={termsChecked} onChange={(e) => setTermsChecked(e.target.checked)} className="mr-2" />
+              <input type="checkbox" checked={termsChecked} onChange={(e) => setTermsChecked(e.target.checked)} className="mr-2" required />
               <label className="text-sm text-gray-600">I agree to the <a href="https://docs.google.com/document/d/1QwyB1eZ9yHKCul-bnP5G9JYj8GNAC5-v8h7HnVyqcyw/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Terms and Conditions</a>.</label>
             </div>
             <p className="text-[#CF066C] font-medium">Total Price: ${totalPrice}</p>
-            <button disabled={!isFormValid || loading} onClick={handlePayNow} className="w-full py-2 mt-4 bg-[#CF066C] text-white rounded-full hover:bg-[#EDEC25] hover:text-[#CF066C] transition duration-300 font-semibold cursor-pointer">Pay Now</button>
-            <button disabled={!isFormValid || loading} onClick={handlePayAtCounter} className="w-full py-2 mt-4 bg-[#EDEC25] text-[#CF066C] rounded-full hover:bg-[#CF066C] hover:text-white transition duration-300 font-semibold cursor-pointer">Pay at Counter</button>
+            <button onClick={handlePayNow} className="w-full py-2 mt-4 bg-[#CF066C] text-white rounded-full hover:bg-[#EDEC25] hover:text-[#CF066C] transition duration-300 font-semibold cursor-pointer">Pay Now</button>
+            <button onClick={handlePayAtCounter} className="w-full py-2 mt-4 bg-[#EDEC25] text-[#CF066C] rounded-full hover:bg-[#CF066C] hover:text-white transition duration-300 font-semibold cursor-pointer">Pay at Counter</button>
             {showMessage && <div className="mt-4 p-4 bg-green-100 text-green-700 rounded">{showMessage}</div>}
           </div>
         )}
