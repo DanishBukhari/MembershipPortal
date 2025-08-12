@@ -27,7 +27,7 @@ const AdminPortal = () => {
   useEffect(() => {
     const fetchWalkInBookings = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/admin/walk-ins");
+        const res = await axios.get("https://membership-latest-d577860ce51a.herokuapp.com/api/admin/walk-ins");
         setWalkInBookings(res.data);
       } catch (err) {
         toast.error("Failed to fetch walk-in bookings");
@@ -73,7 +73,7 @@ const AdminPortal = () => {
   const handleSearch = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
       setIsModalOpen(true);
@@ -85,7 +85,7 @@ const AdminPortal = () => {
   const checkVisit = async () => {
     try {
       setIsCheckingIn(true);
-      const res = await axios.post("http://localhost:5000/api/check-visit", {
+      const res = await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/check-visit", {
         userId: selectedUser._id,
         membershipIds: selectedBookings.primary,
         familyIds: selectedBookings.family,
@@ -109,7 +109,7 @@ const AdminPortal = () => {
         }
       }
       const refreshRes = await axios.get(
-        `http://localhost:5000/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(refreshRes.data);
     } catch (err) {
@@ -132,14 +132,14 @@ const AdminPortal = () => {
     familyMemberId,
   ) => {
     try {
-      await axios.post("http://localhost:5000/api/confirm-cash-payment", {
+      await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/confirm-cash-payment", {
         userId: selectedUser._id,
         membershipId: isFamily ? familyMemberId : membershipId,
         isFamily,
       });
       toast.success("Cash payment confirmed!");
       const res = await axios.get(
-        `http://localhost:5000/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
     } catch (err) {
@@ -149,7 +149,7 @@ const AdminPortal = () => {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete("http://localhost:5000/api/admin/delete-user", {
+      await axios.delete("https://membership-latest-d577860ce51a.herokuapp.com/api/admin/delete-user", {
         data: { userId: selectedUser._id },
       });
       toast.success("User deleted successfully!");
@@ -163,7 +163,7 @@ const AdminPortal = () => {
   const refreshUser = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/admin/user?phone=${phone}`,
+        `https://membership-latest-d577860ce51a.herokuapp.com/api/admin/user?phone=${phone}`,
       );
       setSelectedUser(res.data);
       toast.success("Status updated");

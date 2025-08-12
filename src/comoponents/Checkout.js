@@ -58,7 +58,7 @@ const CheckoutForm = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/payment",
+        "https://membership-latest-d577860ce51a.herokuapp.com/api/payment",
         {
           paymentMethodId: paymentMethod.id,
           memberships: memberships || ["walk-in"], // Default to ['walk-in'] if no memberships
