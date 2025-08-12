@@ -40,7 +40,7 @@ const MembershipForm = () => {
     try {
       const memberships = [primaryTier, ...familyMemberships];
       await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/users",
+        "http://localhost:5000/api/users",
         {
           name,
           email,

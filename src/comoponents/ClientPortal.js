@@ -9,7 +9,6 @@ const stripe = new Stripe(process.env.REACT_APP_STRIPE_SECRET_KEY);
 const ClientPortal = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("home");
   const [showProfileCompletion, setShowProfileCompletion] = useState(false);
@@ -36,6 +35,11 @@ const ClientPortal = () => {
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
   const [prices, setPrices] = useState({});
+  const [assignModal, setAssignModal] = useState(false);
+  const [assignIsFamily, setAssignIsFamily] = useState(false);
+  const [assignMemberId, setAssignMemberId] = useState(null);
+  const [assignDay, setAssignDay] = useState('');
+  const [assignHours, setAssignHours] = useState(1);
 
   const tierOrder = ["supporter", "leader", "legacy-maker"];
 
@@ -56,6 +60,7 @@ const ClientPortal = () => {
     };
     return isDiscounted ? priceMap[tier].discounted : priceMap[tier].full;
   };
+
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -87,9 +92,10 @@ const ClientPortal = () => {
         toast.error("Failed to load subscription prices.");
       }
     };
+
     if (token) {
       axios
-        .get("https://membership-latest-d577860ce51a.herokuapp.com/api/user", {
+        .get("http://localhost:5000/api/user", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -99,10 +105,10 @@ const ClientPortal = () => {
           setAge(res.data.age || "");
           setFamily(res.data.family || []);
           setPhoto(res.data.photo || null);
-          if (!res.data.profileComplete) {
+          if (!res.data.profileComplete || !res.data.address || !res.data.photo) {
             setShowProfileCompletion(true);
             setFamilyMembersToAdd(
-              res.data.familyTiers.map((tier) => ({
+              (res.data.familyTiers || []).map((tier) => ({
                 tier,
                 name: "",
                 relationship: "",
@@ -135,7 +141,7 @@ const ClientPortal = () => {
   const fetchSubscription = async (tokenValue) => {
     try {
       const res = await axios.get(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription",
+        "http://localhost:5000/api/subscription",
         {
           headers: { Authorization: `Bearer ${tokenValue}` },
         },
@@ -149,7 +155,7 @@ const ClientPortal = () => {
   const fetchInvoices = async (tokenValue) => {
     try {
       const res = await axios.get(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/invoices",
+        "http://localhost:5000/api/invoices",
         {
           headers: { Authorization: `Bearer ${tokenValue}` },
         },
@@ -166,7 +172,7 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/upload-photo",
+        "http://localhost:5000/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -185,7 +191,7 @@ const ClientPortal = () => {
     formData.append("photo", file);
     try {
       const res = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/upload-photo",
+        "http://localhost:5000/api/upload-photo",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -214,8 +220,8 @@ const ClientPortal = () => {
       return;
     }
     try {
-      await axios.put(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
+      const res = await axios.put(
+        "http://localhost:5000/api/user",
         {
           email: user.email,
           photo,
@@ -227,9 +233,10 @@ const ClientPortal = () => {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
+      console.log("Profile update response:", res.data);
       for (const member of familyMembersToAdd) {
         await axios.post(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
+          "http://localhost:5000/api/family",
           {
             name: member.name,
             relationship: member.relationship,
@@ -244,16 +251,20 @@ const ClientPortal = () => {
       }
       setShowProfileCompletion(false);
       toast.success("Profile updated successfully!");
-      const res = await axios.get(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
+      const userRes = await axios.get(
+        "http://localhost:5000/api/user",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-      setUser(res.data);
-      setFamily(res.data.family);
+      setUser(userRes.data);
+      setFamily(userRes.data.family || []);
+      setAddress(userRes.data.address || "");
+      setAge(userRes.data.age || "");
+      setPhoto(userRes.data.photo || null);
     } catch (err) {
-      toast.error("Error updating profile.");
+      console.error("Error updating profile:", err.response?.data);
+      toast.error(err.response?.data?.error || "Error updating profile.");
     }
   };
 
@@ -264,7 +275,7 @@ const ClientPortal = () => {
     }
     try {
       await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/change-password",
+        "http://localhost:5000/api/change-password",
         {
           currentPassword,
           newPassword,
@@ -292,8 +303,12 @@ const ClientPortal = () => {
       return;
     }
     try {
+      console.log("Adding family member with payload:", {
+        ...familyMember,
+        userId: user._id,
+      });
       const res = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
+        "http://localhost:5000/api/family",
         {
           ...familyMember,
           userId: user._id,
@@ -306,7 +321,12 @@ const ClientPortal = () => {
       toast.success("Family member added successfully!");
       closeModal();
     } catch (err) {
-      toast.error("Error adding family member.");
+      console.error("Error adding family member:", err.response?.data);
+      if (err.response && err.response.status === 400) {
+        toast.error(err.response.data.error);
+      } else {
+        toast.error("Error adding family member.");
+      }
     }
   };
 
@@ -321,7 +341,7 @@ const ClientPortal = () => {
     }
     try {
       const res = await axios.put(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/family",
+        "http://localhost:5000/api/family",
         {
           ...editFamilyMember,
           userId: user._id,
@@ -344,7 +364,7 @@ const ClientPortal = () => {
   const changeTier = async (currentTier, newTier, memberId) => {
     try {
       const response = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription/change-tier",
+        "http://localhost:5000/api/subscription/change-tier",
         { currentTier, newTier, memberId },
         {
           headers: {
@@ -356,7 +376,7 @@ const ClientPortal = () => {
       if (response.data.success) {
         toast.success("Tier changed successfully!");
         const userRes = await axios.get(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
+          "http://localhost:5000/api/user",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -372,7 +392,7 @@ const ClientPortal = () => {
       console.error("Change tier error:", error);
       toast.error(
         "Error changing tier: " +
-          (error.response?.data?.error || error.message),
+        (error.response?.data?.error || error.message),
       );
     }
   };
@@ -380,14 +400,13 @@ const ClientPortal = () => {
   const cancelMemberSubscription = async (member) => {
     if (
       window.confirm(
-        `Are you sure you want to cancel the subscription for ${member.name}? ${
-          member.isPrimary ? "This will cancel the entire subscription." : ""
+        `Are you sure you want to cancel the subscription for ${member.name}? ${member.isPrimary ? "This will cancel the entire subscription." : ""
         }`,
       )
     ) {
       try {
         await axios.post(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/subscription/cancel-member",
+          "http://localhost:5000/api/subscription/cancel-member",
           {
             memberId: member.isPrimary ? null : member.id,
           },
@@ -397,7 +416,7 @@ const ClientPortal = () => {
         );
         toast.success(`Subscription cancelled for ${member.name}.`);
         const res = await axios.get(
-          "https://membership-latest-d577860ce51a.herokuapp.com/api/user",
+          "http://localhost:5000/api/user",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -418,6 +437,7 @@ const ClientPortal = () => {
   };
 
   const openModal = () => setIsModalOpen(true);
+
   const closeModal = () => {
     setIsModalOpen(false);
     setFamilyMember({
@@ -433,6 +453,7 @@ const ClientPortal = () => {
     setEditFamilyMember(member);
     setIsEditModalOpen(true);
   };
+
   const closeEditModal = () => {
     setIsEditModalOpen(false);
     setEditFamilyMember(null);
@@ -448,18 +469,90 @@ const ClientPortal = () => {
     setSelectedMember(null);
   };
 
+  const openAssignModal = (isFamily, memberId) => {
+    setAssignIsFamily(isFamily);
+    setAssignMemberId(memberId);
+    setAssignDay('');
+    setAssignHours(1);
+    setAssignModal(true);
+  };
+
+  const closeAssignModal = () => setAssignModal(false);
+
+  const submitAssign = async () => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/assign-hours",
+        {
+          isFamily: assignIsFamily,
+          memberId: assignMemberId,
+          day: assignDay,
+          hours: assignHours
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Hours assigned successfully!");
+      const res = await axios.get(
+        "http://localhost:5000/api/user",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setUser(res.data);
+      setFamily(res.data.family);
+      closeAssignModal();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Error assigning hours.");
+    }
+  };
+
+  const removeAssign = async (isFamily, memberId, day) => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/remove-assign",
+        {
+          isFamily,
+          memberId,
+          day
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Assignment removed successfully!");
+      const res = await axios.get(
+        "http://localhost:5000/api/user",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setUser(res.data);
+      setFamily(res.data.family);
+    } catch (err) {
+      toast.error("Error removing assignment.");
+    }
+  };
+
+  const isMaxedOut = (member, isFamily) => {
+    if (member.tier === "legacy-maker") return false;
+    const totalAssigned = member.assignedDays.reduce((sum, a) => sum + a.assignedHours, 0);
+    return totalAssigned >= member.initialHours;
+  };
+
   if (!user) return <div className="text-center py-12">Loading...</div>;
 
   const allMembers = [
-    ...(user.memberships.length > 0
+    ...(user.memberships && user.memberships.length > 0
       ? [
-          {
-            id: user._id,
-            name: user.name,
-            tier: user.memberships[0].tier,
-            isPrimary: true,
-          },
-        ]
+        {
+          id: user._id,
+          name: user.name,
+          tier: user.memberships[0]?.tier || "unknown",
+          isPrimary: true,
+        },
+      ]
       : []),
     ...family.map((member) => ({
       id: member._id,
@@ -478,11 +571,10 @@ const ClientPortal = () => {
             <li>
               <button
                 onClick={() => setActiveTab("home")}
-                className={`block w-full text-left py-2 px-4 ${
-                  activeTab === "home"
+                className={`block w-full text-left py-2 px-4 ${activeTab === "home"
                     ? "bg-[#CF066C] text-white"
                     : "bg-gray-200"
-                } rounded-md mb-5`}
+                  } rounded-md mb-5`}
               >
                 Home
               </button>
@@ -490,23 +582,32 @@ const ClientPortal = () => {
             <li>
               <button
                 onClick={() => setActiveTab("profile")}
-                className={`block w-full text-left py-2 px-4 ${
-                  activeTab === "profile"
+                className={`block w-full text-left py-2 px-4 ${activeTab === "profile"
                     ? "bg-[#CF066C] text-white"
                     : "bg-gray-200"
-                } rounded-md mb-5`}
+                  } rounded-md mb-5`}
               >
                 Profile
               </button>
             </li>
             <li>
               <button
-                onClick={() => setActiveTab("settings")}
-                className={`block w-full text-left py-2 px-4 ${
-                  activeTab === "settings"
+                onClick={() => setActiveTab("bookVisits")}
+                className={`block w-full text-left py-2 px-4 ${activeTab === "bookVisits"
                     ? "bg-[#CF066C] text-white"
                     : "bg-gray-200"
-                } rounded-md mb-5`}
+                  } rounded-md mb-5`}
+              >
+                Book Your Visits
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveTab("settings")}
+                className={`block w-full text-left py-2 px-4 ${activeTab === "settings"
+                    ? "bg-[#CF066C] text-white"
+                    : "bg-gray-200"
+                  } rounded-md mb-5`}
               >
                 Settings
               </button>
@@ -547,7 +648,7 @@ const ClientPortal = () => {
                   />
                 </div>
                 <div>
-                  <label className=" сынtext-[#CF066C] font-medium">
+                  <label className="block text-[#CF066C] font-medium">
                     Upload Photo
                   </label>
                   <input
@@ -643,13 +744,13 @@ const ClientPortal = () => {
                 {user.name.charAt(0).toUpperCase() + user.name.slice(1)}
               </p>
               <p>
-                <strong>Email:</strong> {user.email}
+                <strong>Email:</strong> {user.email || "Not provided"}
               </p>
               <p>
                 <strong>Phone:</strong> {user.phone}
               </p>
               <p>
-                <strong>Address:</strong> {address || "Not provided"}
+                <strong>Address:</strong> {user.address || "Not provided"}
               </p>
               {user.photo && (
                 <img
@@ -658,7 +759,7 @@ const ClientPortal = () => {
                   className="w-24 h-24 rounded-md mt-2"
                 />
               )}
-              {user.memberships
+              {user.memberships && user.memberships
                 .filter((m) => m.paymentStatus === "active")
                 .map((m, idx) => (
                   <div key={idx} className="mt-2">
@@ -666,12 +767,12 @@ const ClientPortal = () => {
                       <strong>Tier:</strong> {m.tier.toUpperCase()}
                     </p>
                     <p>
-                      <strong>Visits Left:</strong>{" "}
-                      {m.visitsLeft === Number.MAX_SAFE_INTEGER
+                      <strong>Hours Left:</strong>{" "}
+                      {m.hoursLeft === Number.MAX_SAFE_INTEGER
                         ? "Unlimited"
-                        : m.visitsLeft === 0
-                        ? "Maxed Out"
-                        : m.visitsLeft}
+                        : m.hoursLeft === 0
+                          ? "Maxed Out"
+                          : m.hoursLeft}
                     </p>
                     {m.tier === "walk-in" && m.expiry && (
                       <p>
@@ -705,12 +806,12 @@ const ClientPortal = () => {
                     <strong>Tier:</strong> {member.tier.toUpperCase()}
                   </p>
                   <p>
-                    <strong>Visits Left:</strong>{" "}
-                    {member.visitsLeft === Number.MAX_SAFE_INTEGER
+                    <strong>Hours Left:</strong>{" "}
+                    {member.hoursLeft === Number.MAX_SAFE_INTEGER
                       ? "Unlimited"
-                      : member.visitsLeft === 0
-                      ? "Maxed Out"
-                      : member.visitsLeft}
+                      : member.hoursLeft === 0
+                        ? "Maxed Out"
+                        : member.hoursLeft}
                   </p>
                   {member.tier === "walk-in" && member.expiry && (
                     <p>
@@ -735,6 +836,92 @@ const ClientPortal = () => {
             >
               Add Family Member (50% Off)
             </button>
+            <h3 className="text-xl font-bold text-[#CF066C] mt-6 mb-4">Days Visited</h3>
+            {user.memberships && user.memberships.length > 0 && user.memberships[0] && user.memberships[0].visitedDays && user.memberships[0].visitedDays.length > 0 ? (
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold">Primary: {user.name} ({user.memberships[0].tier.toUpperCase()})</h4>
+                <ul className="list-disc pl-5 mt-2">
+                  {user.memberships[0].visitedDays.slice(0, user.memberships[0].tier === "leader" ? 5 : user.memberships[0].tier === "supporter" ? 3 : Infinity).map((v, i) => (
+                    <li key={i} className="text-sm">
+                      {i + 1 === 1 ? "First" : i + 1 === 2 ? "Second" : `${i + 1}th`} visit at: {new Date(v.startTime).toLocaleTimeString("en-GB")} on {new Date(v.day).toLocaleDateString("en-GB")}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">No visits recorded for primary member</p>
+            )}
+            {family.map((member) => (
+              <div key={member._id} className="mb-6">
+                <h4 className="text-lg font-semibold">{member.name} ({member.tier.toUpperCase()})</h4>
+                {member.visitedDays && member.visitedDays.length > 0 ? (
+                  <ul className="list-disc pl-5 mt-2">
+                    {member.visitedDays.slice(0, member.tier === "leader" ? 5 : member.tier === "supporter" ? 3 : Infinity).map((v, i) => (
+                      <li key={i} className="text-sm">
+                        {i + 1 === 1 ? "First" : i + 1 === 2 ? "Second" : `${i + 1}th`} visit at: {new Date(v.startTime).toLocaleTimeString("en-GB")} on {new Date(v.day).toLocaleDateString("en-GB")}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-500">No visits recorded</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        {activeTab === "bookVisits" && (
+          <div>
+            <h3 className="text-xl font-bold text-[#CF066C] mb-4">Book Your Visits</h3>
+            {user.memberships && user.memberships.length > 0 && user.memberships[0] && (
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold">Primary: {user.name} ({user.memberships[0].tier.toUpperCase()})</h4>
+                {user.memberships[0].assignedDays && user.memberships[0].assignedDays.length > 0 ? (
+                  <ul className="list-disc pl-5 mt-2">
+                    {user.memberships[0].assignedDays.filter(a => a.assignedHours > 0).map((a, i) => (
+                      <li key={i} className="text-sm">
+                        {new Date(a.day).toLocaleDateString("en-GB")}: {a.assignedHours} hours
+                        <button onClick={() => removeAssign(false, null, a.day)} className="ml-2 text-red-500 text-xs">Remove</button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-500">No bookings</p>
+                )}
+                <button
+                  onClick={() => openAssignModal(false, null)}
+                  disabled={isMaxedOut(user.memberships[0], false)}
+                  className={`mt-2 px-4 py-1 bg-green-500 text-white rounded ${isMaxedOut(user.memberships[0], false) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  Book Visit
+                </button>
+                <p className="text-sm mt-2">Total booked: {(user.memberships[0].assignedDays || []).reduce((s, a) => s + a.assignedHours, 0) || 0} / {user.memberships[0].initialHours === Number.MAX_SAFE_INTEGER ? 'Unlimited' : user.memberships[0].initialHours}</p>
+              </div>
+            )}
+            {family.map((member) => (
+              <div key={member._id} className="mb-6">
+                <h4 className="text-lg font-semibold">{member.name} ({member.tier.toUpperCase()})</h4>
+                {member.assignedDays && member.assignedDays.length > 0 ? (
+                  <ul className="list-disc pl-5 mt-2">
+                    {member.assignedDays.filter(a => a.assignedHours > 0).map((a, i) => (
+                      <li key={i} className="text-sm">
+                        {new Date(a.day).toLocaleDateString("en-GB")}: {a.assignedHours} hours
+                        <button onClick={() => removeAssign(true, member._id, a.day)} className="ml-2 text-red-500 text-xs">Remove</button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-500">No bookings</p>
+                )}
+                <button
+                  onClick={() => openAssignModal(true, member._id)}
+                  disabled={isMaxedOut(member, true)}
+                  className={`mt-2 px-4 py-1 bg-green-500 text-white rounded ${isMaxedOut(member, true) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  Book Visit
+                </button>
+                <p className="text-sm mt-2">Total booked: {(member.assignedDays || []).reduce((s, a) => s + a.assignedHours, 0)} / {member.initialHours === Number.MAX_SAFE_INTEGER ? 'Unlimited' : member.initialHours}</p>
+              </div>
+            ))}
           </div>
         )}
         {activeTab === "profile" && (
@@ -758,7 +945,7 @@ const ClientPortal = () => {
                 </label>
                 <input
                   type="email"
-                  value={user.email}
+                  value={user.email || ""}
                   disabled
                   className="w-80 p-2 mt-1 border border-gray-300 rounded-md bg-gray-100"
                 />
@@ -897,7 +1084,7 @@ const ClientPortal = () => {
             <h4 className="text-lg font-semibold text-[#CF066C] mb-2">
               Invoices
             </h4>
-            {invoices.map((invoice, idx) => (
+            {invoices.length > 0 ? (
               <table className="min-w-full table-auto border border-gray-300 mt-4">
                 <thead>
                   <tr className="bg-gray-100 text-left">
@@ -929,7 +1116,9 @@ const ClientPortal = () => {
                   ))}
                 </tbody>
               </table>
-            ))}
+            ) : (
+              <p>No invoices found.</p>
+            )}
           </div>
         )}
       </main>
@@ -1213,7 +1402,7 @@ const ClientPortal = () => {
                                   : selectedMember.id,
                               )
                             }
-                            className="mt-2 w-full px-3 py-1 bg-[#5 YeatsBAFF] text-white rounded-md hover:bg-[#4CA7E6] transition text-sm font-semibold"
+                            className="mt-2 w-full px-3 py-1 bg-[#5EBAFF] text-white rounded-md hover:bg-[#4CA7E6] transition text-sm font-semibold"
                           >
                             Upgrade
                           </button>
@@ -1246,6 +1435,39 @@ const ClientPortal = () => {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {assignModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 className="text-2xl font-bold text-[#CF066C] mb-4">Book Visit</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[#CF066C] font-medium">Day</label>
+                <input
+                  type="date"
+                  value={assignDay}
+                  onChange={(e) => setAssignDay(e.target.value)}
+                  className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+              <div>
+                <label className="block text-[#CF066C] font-medium">Hours</label>
+                <input
+                  type="number"
+                  value={assignHours}
+                  onChange={(e) => setAssignHours(Number(e.target.value))}
+                  min={1}
+                  className="w-full p-2 mt-1 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button onClick={closeAssignModal} className="px-4 py-2 bg-gray-300 rounded-md">Cancel</button>
+                <button onClick={submitAssign} className="px-4 py-2 bg-[#CF066C] text-white rounded-md">Book</button>
+              </div>
             </div>
           </div>
         </div>

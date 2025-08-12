@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/login",
+        "http://localhost:5000/api/login",
         {
           email,
           password,
@@ -35,7 +35,7 @@ const Login = () => {
   const handleForgotPassword = async () => {
     try {
       await axios.post(
-        "https://membership-latest-d577860ce51a.herokuapp.com/api/forgot-password",
+        "http://localhost:5000/api/forgot-password",
         {
           email: forgotEmail,
         },

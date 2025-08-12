@@ -69,7 +69,7 @@ const WalkInForm = () => {
     if (!isFormValid() || loading) return;
     setLoading(true);
     try {
-      const response = await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/walk-in", {
+      const response = await axios.post("http://localhost:5000/api/walk-in", {
         name, email, phone, tier: "walk-in", numHours, numParticipants, numNonParticipatingAdults, selectedDate
       });
       if (response.data.error) {
@@ -90,7 +90,7 @@ const WalkInForm = () => {
     if (!isFormValid() || loading) return;
     setLoading(true);
     try {
-      const response = await axios.post("https://membership-latest-d577860ce51a.herokuapp.com/api/walk-in", {
+      const response = await axios.post("http://localhost:5000/api/walk-in", {
         name, email, phone, tier: "walk-in", paymentMethod: "cash", numHours, numParticipants, numNonParticipatingAdults, selectedDate
       });
       if (response.data.error) {
